@@ -138,7 +138,7 @@ class LogStream : boost::noncopyable
     return *this;
   }
 
-#ifndef MUDUO_STD_STRING
+#ifndef TIM_STD_STRING
   self& operator<<(const std::string& v)
   {
     buffer_.append(v.c_str(), v.size());

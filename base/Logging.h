@@ -1,10 +1,10 @@
 #ifndef MUDUO_BASE_LOGGING_H
 #define MUDUO_BASE_LOGGING_H
 
-#include <muduo/base/LogStream.h>
-#include <muduo/base/Timestamp.h>
+#include <tim/base/LogStream.h>
+#include <tim/base/Timestamp.h>
 
-namespace muduo
+namespace tim
 {
 
 class TimeZone;
@@ -149,4 +149,4 @@ T* CheckNotNull(Logger::SourceFile file, int line, const char *names, T* ptr) {
 
 }
 
-#endif  // MUDUO_BASE_LOGGING_H
+#endif  // TIM_BASE_LOGGING_H

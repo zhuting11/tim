@@ -180,7 +180,7 @@ LogStream& LogStream::operator<<(double v)
 {
   if (buffer_.avail() >= kMaxNumericSize)
   {
-    int len = snprintf(buffer_.current(), kMaxNumericSize, "%.12g", v);
+    int len = _snprintf_s(buffer_.current(), kMaxNumericSize, "%.12g", v);
     buffer_.add(len);
   }
   return *this;
@@ -191,7 +191,7 @@ Fmt::Fmt(const char* fmt, T val)
 {
   BOOST_STATIC_ASSERT(boost::is_arithmetic<T>::value == true);
 
-  length_ = snprintf(buf_, sizeof buf_, fmt, val);
+  length_ = _snprintf_s(buf_, sizeof buf_, fmt, val);
   assert(static_cast<size_t>(length_) < sizeof buf_);
 }
 

@@ -1,5 +1,5 @@
-#include <muduo/base/TimeZone.h>
-#include <muduo/base/Date.h>
+#include <tim/base/TimeZone.h>
+#include <tim/base/Date.h>
 
 #include <boost/noncopyable.hpp>
 #include <algorithm>
@@ -14,7 +14,7 @@
 #include <stdio.h>
 #include <strings.h>
 
-namespace muduo
+namespace tim
 {
 namespace detail
 {
@@ -80,7 +80,7 @@ inline void fillHMS(unsigned seconds, struct tm* utc)
 const int kSecondsPerDay = 24*60*60;
 }
 
-using namespace muduo;
+using namespace tim;
 using namespace std;
 
 struct TimeZone::Data
@@ -91,7 +91,7 @@ struct TimeZone::Data
   string abbreviation;
 };
 
-namespace muduo
+namespace tim
 {
 namespace detail
 {

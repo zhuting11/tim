@@ -180,7 +180,7 @@ LogStream& LogStream::operator<<(double v)
 {
   if (buffer_.avail() >= kMaxNumericSize)
   {
-    int len = _snprintf_s(buffer_.current(), kMaxNumericSize, "%.12g", v);
+    int len = _snprintf_s(buffer_.current(), kMaxNumericSize, kMaxNumericSize, "%.12g", v);
     buffer_.add(len);
   }
   return *this;

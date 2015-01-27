@@ -1,14 +1,5 @@
-// Copyright 2010, Shuo Chen.  All rights reserved.
-// http://code.google.com/p/muduo/
-//
-// Use of this source code is governed by a BSD-style license
-// that can be found in the License file.
-
-// Author: Shuo Chen (chenshuo at chenshuo dot com)
-//
-
-#include <muduo/base/FileUtil.h>
-#include <muduo/base/Logging.h> // strerror_tl
+#include <tim/base/FileUtil.h>
+#include <tim/base/Logging.h> // strerror_tl
 
 #include <boost/static_assert.hpp>
 
@@ -18,15 +9,19 @@
 #include <stdio.h>
 #include <sys/stat.h>
 
-using namespace muduo;
+using namespace tim;
+
 
 FileUtil::AppendFile::AppendFile(StringArg filename)
-  : fp_(::fopen(filename.c_str(), "ae")),  // 'e' for O_CLOEXEC
+  //: fp_(::fopen_s(filename.c_str(), "ae")),  // 'e' for O_CLOEXEC
+  : fp_(NULL),  // 'e' for O_CLOEXEC
     writtenBytes_(0)
 {
+  ::fopen_s(&fp_, filename.c_str(), "ae");  // 'e' for O_CLOEXEC
   assert(fp_);
-  ::setbuffer(fp_, buffer_, sizeof buffer_);
-  // posix_fadvise POSIX_FADV_DONTNEED ?
+  //::setbuffer(fp_, buffer_, sizeof buffer_);
+  setvbuf(fp_, buffer_, buffer_ ? _IOFBF : _IONBF, sizeof buffer_);
+
 }
 
 FileUtil::AppendFile::~AppendFile()
@@ -65,15 +60,26 @@ void FileUtil::AppendFile::flush()
 size_t FileUtil::AppendFile::write(const char* logline, size_t len)
 {
   // #undef fwrite_unlocked
-  return ::fwrite_unlocked(logline, 1, len, fp_);
+  //return ::fwrite_unlocked(logline, 1, len, fp_);
+  return ::_fwrite_nolock(logline, 1, len, fp_);
+
+  
 }
 
 FileUtil::ReadSmallFile::ReadSmallFile(StringArg filename)
-  : fd_(::open(filename.c_str(), O_RDONLY | O_CLOEXEC)),
+  //: fd_(::open(filename.c_str(), O_RDONLY | O_CLOEXEC)),
+  :fd_(CreateFile(filename.c_str(),              
+                       GENERIC_READ,          // open for reading
+                       FILE_SHARE_READ,       // share for reading
+                       NULL,                  // default security
+                       OPEN_EXISTING,         // existing file only
+                       FILE_ATTRIBUTE_NORMAL, // normal file
+                       NULL)),
     err_(0)
 {
   buf_[0] = '\0';
-  if (fd_ < 0)
+  //if (fd_ < 0)
+  if(fd_ == INVALID_HANDLE_VALUE)
   {
     err_ = errno;
   }
@@ -81,9 +87,15 @@ FileUtil::ReadSmallFile::ReadSmallFile(StringArg filename)
 
 FileUtil::ReadSmallFile::~ReadSmallFile()
 {
-  if (fd_ >= 0)
+  //if (fd_ >= 0)
+  //{
+  //  ::close(fd_); // FIXME: check EINTR
+  //}
+
+  if (fd_)
   {
-    ::close(fd_); // FIXME: check EINTR
+    CloseHandle(fd_); // FIXME: check EINTR
+	fd_ = 0;
   }
 }
 
@@ -157,7 +169,12 @@ int FileUtil::ReadSmallFile::readToBuffer(int* size)
   int err = err_;
   if (fd_ >= 0)
   {
-    ssize_t n = ::pread(fd_, buf_, sizeof(buf_)-1, 0);
+    //ssize_t n = ::pread(fd_, buf_, sizeof(buf_)-1, 0);
+	DWORD n = 0;
+	OVERLAPPED ov = {0};
+    ov.Offset = 0;
+    ov.OffsetHigh = 0;
+	bool res = ReadFile(fd_, buf_, sizeof(buf_)-1, &n, &ov);
     if (n >= 0)
     {
       if (size)
@@ -174,17 +191,17 @@ int FileUtil::ReadSmallFile::readToBuffer(int* size)
   return err;
 }
 
-template int FileUtil::readFile(StringArg filename,
-                                int maxSize,
-                                string* content,
-                                int64_t*, int64_t*, int64_t*);
+//template int FileUtil::readFile(StringArg filename,
+//                                int maxSize,
+//                                string* content,
+//                                int64_t*, int64_t*, int64_t*);
+//
+//template int FileUtil::ReadSmallFile::readToString(
+//    int maxSize,
+//    string* content,
+//    int64_t*, int64_t*, int64_t*);
 
-template int FileUtil::ReadSmallFile::readToString(
-    int maxSize,
-    string* content,
-    int64_t*, int64_t*, int64_t*);
-
-#ifndef MUDUO_STD_STRING
+//#ifndef TIM_STD_STRING
 template int FileUtil::readFile(StringArg filename,
                                 int maxSize,
                                 std::string* content,
@@ -194,5 +211,5 @@ template int FileUtil::ReadSmallFile::readToString(
     int maxSize,
     std::string* content,
     int64_t*, int64_t*, int64_t*);
-#endif
+//#endif
 

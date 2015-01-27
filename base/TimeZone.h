@@ -1,20 +1,15 @@
-// Use of this source code is governed by a BSD-style license
-// that can be found in the License file.
-//
-// Author: Shuo Chen (chenshuo at chenshuo dot com)
+#ifndef TIM_BASE_TIMEZONE_H
+#define TIM_BASE_TIMEZONE_H
 
-#ifndef MUDUO_BASE_TIMEZONE_H
-#define MUDUO_BASE_TIMEZONE_H
-
-#include <muduo/base/copyable.h>
+#include <tim/base/copyable.h>
 #include <boost/shared_ptr.hpp>
 #include <time.h>
 
-namespace muduo
+namespace tim
 {
 
 // TimeZone for 1970~2030
-class TimeZone : public muduo::copyable
+class TimeZone //: public tim::copyable
 {
  public:
   explicit TimeZone(const char* zonefile);
@@ -48,4 +43,4 @@ class TimeZone : public muduo::copyable
 };
 
 }
-#endif  // MUDUO_BASE_TIMEZONE_H
+#endif  // TIM_BASE_TIMEZONE_H

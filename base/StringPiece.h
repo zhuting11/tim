@@ -58,15 +58,15 @@ class StringArg // copyable
     : str_(str)
   { }
 
-  StringArg(const string& str)
-    : str_(str.c_str())
-  { }
+  //StringArg(const string& str)
+  //  : str_(str.c_str())
+  //{ }
 
-#ifndef TIM_STD_STRING
+//#ifndef TIM_STD_STRING
   StringArg(const std::string& str)
     : str_(str.c_str())
   { }
-#endif
+//#endif
 
   const char* c_str() const { return str_; }
 
@@ -90,12 +90,12 @@ class StringPiece {
   StringPiece(const unsigned char* str)
     : ptr_(reinterpret_cast<const char*>(str)),
       length_(static_cast<int>(strlen(ptr_))) { }
-  StringPiece(const string& str)
-    : ptr_(str.data()), length_(static_cast<int>(str.size())) { }
-#ifndef TIM_STD_STRING
+  //StringPiece(const string& str)
+  //  : ptr_(str.data()), length_(static_cast<int>(str.size())) { }
+//#ifndef TIM_STD_STRING
   StringPiece(const std::string& str)
     : ptr_(str.data()), length_(static_cast<int>(str.size())) { }
-#endif
+//#endif
   StringPiece(const char* offset, int len)
     : ptr_(offset), length_(len) { }
 

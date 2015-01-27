@@ -1,8 +1,8 @@
-#include <muduo/base/Logging.h>
+#include <tim/base/Logging.h>
 
-#include <muduo/base/CurrentThread.h>
-#include <muduo/base/Timestamp.h>
-#include <muduo/base/TimeZone.h>
+#include <tim/base/CurrentThread.h>
+#include <tim/base/Timestamp.h>
+#include <tim/base/TimeZone.h>
 
 #include <errno.h>
 #include <stdio.h>
@@ -10,7 +10,7 @@
 
 #include <sstream>
 
-namespace muduo
+namespace tim
 {
 
 /*
@@ -30,23 +30,39 @@ class LoggerImpl
 };
 */
 
-__thread char t_errnobuf[512];
-__thread char t_time[32];
-__thread time_t t_lastSecond;
+__declspec(thread) char t_errnobuf[512];
+__declspec(thread) char t_time[32];
+__declspec(thread) time_t t_lastSecond;
+
+#define strerror_r(errno,buf,len) strerror_s(buf,len,errno)
+
+#define gmtime_r(a, b) gmtime_s(b, a)
 
 const char* strerror_tl(int savedErrno)
 {
-  return strerror_r(savedErrno, t_errnobuf, sizeof t_errnobuf);
+  strerror_r(savedErrno, t_errnobuf, sizeof t_errnobuf);
+  return t_errnobuf;
 }
 
 Logger::LogLevel initLogLevel()
 {
-  if (::getenv("MUDUO_LOG_TRACE"))
-    return Logger::TRACE;
-  else if (::getenv("MUDUO_LOG_DEBUG"))
-    return Logger::DEBUG;
-  else
-    return Logger::INFO;
+  size_t requiredSize;
+  getenv_s( &requiredSize, NULL, 0, "TIM_LOG_TRACE");
+  if(requiredSize)
+	  return Logger::TRACE;
+
+  getenv_s( &requiredSize, NULL, 0, "TIM_LOG_DEBUG");
+  if(requiredSize)
+	  return Logger::DEBUG;
+
+  return Logger::INFO;
+
+  //if (::getenv("TIM_LOG_TRACE"))
+  //  return Logger::TRACE;
+  //else if (::getenv("TIM_LOG_DEBUG"))
+  //  return Logger::DEBUG;
+  //else
+  //  return Logger::INFO;
 }
 
 Logger::LogLevel g_logLevel = initLogLevel();
@@ -57,7 +73,7 @@ const char* LogLevelName[Logger::NUM_LOG_LEVELS] =
   "DEBUG ",
   "INFO  ",
   "WARN  ",
-  "ERROR ",
+  "ERR ",
   "FATAL ",
 };
 
@@ -102,11 +118,11 @@ void defaultFlush()
 
 Logger::OutputFunc g_output = defaultOutput;
 Logger::FlushFunc g_flush = defaultFlush;
-TimeZone g_logTimeZone;
+//TimeZone g_logTimeZone;
 
 }
 
-using namespace muduo;
+using namespace tim;
 
 Logger::Impl::Impl(LogLevel level, int savedErrno, const SourceFile& file, int line)
   : time_(Timestamp::now()),
@@ -134,33 +150,33 @@ void Logger::Impl::formatTime()
   {
     t_lastSecond = seconds;
     struct tm tm_time;
-    if (g_logTimeZone.valid())
-    {
-      tm_time = g_logTimeZone.toLocalTime(seconds);
-    }
-    else
-    {
-      ::gmtime_r(&seconds, &tm_time); // FIXME TimeZone::fromUtcTime
-    }
+    //if (g_logTimeZone.valid())
+    //{
+    //  tm_time = g_logTimeZone.toLocalTime(seconds);
+    //}
+    //else
+    //{
+    ::gmtime_r(&seconds, &tm_time); // FIXME TimeZone::fromUtcTime
+    //}
 
-    int len = snprintf(t_time, sizeof(t_time), "%4d%02d%02d %02d:%02d:%02d",
+    int len = _snprintf_s(t_time, sizeof(t_time), "%4d%02d%02d %02d:%02d:%02d",
         tm_time.tm_year + 1900, tm_time.tm_mon + 1, tm_time.tm_mday,
         tm_time.tm_hour, tm_time.tm_min, tm_time.tm_sec);
     assert(len == 17); (void)len;
   }
 
-  if (g_logTimeZone.valid())
-  {
-    Fmt us(".%06d ", microseconds);
-    assert(us.length() == 8);
-    stream_ << T(t_time, 17) << T(us.data(), 8);
-  }
-  else
-  {
+  //if (g_logTimeZone.valid())
+  //{
+  //  Fmt us(".%06d ", microseconds);
+  //  assert(us.length() == 8);
+  //  stream_ << T(t_time, 17) << T(us.data(), 8);
+  //}
+  //else
+  //{
     Fmt us(".%06dZ ", microseconds);
     assert(us.length() == 9);
     stream_ << T(t_time, 17) << T(us.data(), 9);
-  }
+  //}
 }
 
 void Logger::Impl::finish()
@@ -185,7 +201,7 @@ Logger::Logger(SourceFile file, int line, LogLevel level)
 }
 
 Logger::Logger(SourceFile file, int line, bool toAbort)
-  : impl_(toAbort?FATAL:ERROR, errno, file, line)
+  : impl_(toAbort?FATAL:ERR, errno, file, line)
 {
 }
 
@@ -216,7 +232,7 @@ void Logger::setFlush(FlushFunc flush)
   g_flush = flush;
 }
 
-void Logger::setTimeZone(const TimeZone& tz)
-{
-  g_logTimeZone = tz;
-}
+//void Logger::setTimeZone(const TimeZone& tz)
+//{
+//  g_logTimeZone = tz;
+//}

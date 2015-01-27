@@ -1,13 +1,13 @@
-#ifndef MUDUO_BASE_LOGFILE_H
-#define MUDUO_BASE_LOGFILE_H
+#ifndef TIM_BASE_LOGFILE_H
+#define TIM_BASE_LOGFILE_H
 
-#include <muduo/base/Mutex.h>
-#include <muduo/base/Types.h>
+#include <tim/base/Mutex.h>
+#include <tim/base/Types.h>
 
 #include <boost/noncopyable.hpp>
 #include <boost/scoped_ptr.hpp>
 
-namespace muduo
+namespace tim
 {
 
 namespace FileUtil
@@ -51,4 +51,4 @@ class LogFile : boost::noncopyable
 };
 
 }
-#endif  // MUDUO_BASE_LOGFILE_H
+#endif  // TIM_BASE_LOGFILE_H

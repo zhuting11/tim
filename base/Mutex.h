@@ -1,41 +1,73 @@
-// Use of this source code is governed by a BSD-style license
-// that can be found in the License file.
-//
-// Author: Shuo Chen (chenshuo at chenshuo dot com)
+#ifndef TIM_BASE_MUTEX_H
+#define TIM_BASE_MUTEX_H
 
-#ifndef MUDUO_BASE_MUTEX_H
-#define MUDUO_BASE_MUTEX_H
-
-#include <muduo/base/CurrentThread.h>
+#include <tim/base/CurrentThread.h>
 #include <boost/noncopyable.hpp>
 #include <assert.h>
-#include <pthread.h>
+//#include <pthread.h>
+#include <windows.h>
 
-#ifdef CHECK_PTHREAD_RETURN_VALUE
+//#ifdef CHECK_PTHREAD_RETURN_VALUE
+//
+//#ifdef NDEBUG
+//__BEGIN_DECLS
+//extern void __assert_perror_fail (int errnum,
+//                                  const char *file,
+//                                  unsigned int line,
+//                                  const char *function)
+//    __THROW __attribute__ ((__noreturn__));
+//__END_DECLS
+//#endif
+//
+//#define MCHECK(ret) ({ __typeof__ (ret) errnum = (ret);         \
+//                       if (__builtin_expect(errnum != 0, 0))    \
+//                         __assert_perror_fail (errnum, __FILE__, __LINE__, __func__);})
+//
+//#else  // CHECK_PTHREAD_RETURN_VALUE
+//
+//#define MCHECK(ret) ({ __typeof__ (ret) errnum = (ret);         \
+//                       assert(errnum == 0); (void) errnum;})
+//
+//#endif // CHECK_PTHREAD_RETURN_VALUE
 
-#ifdef NDEBUG
-__BEGIN_DECLS
-extern void __assert_perror_fail (int errnum,
-                                  const char *file,
-                                  unsigned int line,
-                                  const char *function)
-    __THROW __attribute__ ((__noreturn__));
-__END_DECLS
-#endif
+#define MCHECK(ret) (ret)
 
-#define MCHECK(ret) ({ __typeof__ (ret) errnum = (ret);         \
-                       if (__builtin_expect(errnum != 0, 0))    \
-                         __assert_perror_fail (errnum, __FILE__, __LINE__, __func__);})
-
-#else  // CHECK_PTHREAD_RETURN_VALUE
-
-#define MCHECK(ret) ({ __typeof__ (ret) errnum = (ret);         \
-                       assert(errnum == 0); (void) errnum;})
-
-#endif // CHECK_PTHREAD_RETURN_VALUE
-
-namespace muduo
+namespace tim
 {
+
+typedef CRITICAL_SECTION pthread_mutex_t;
+typedef void pthread_mutexattr_t;
+typedef int  pid_t;
+static int pthread_mutex_lock(pthread_mutex_t *m)
+{
+	EnterCriticalSection(m);
+	return 0;
+}
+
+static int pthread_mutex_unlock(pthread_mutex_t *m)
+{
+	LeaveCriticalSection(m);
+	return 0;
+}
+	
+//static int pthread_mutex_trylock(pthread_mutex_t *m)
+//{
+//	return TryEnterCriticalSection(m) ? 0 : EBUSY; 
+//}
+
+static int pthread_mutex_init(pthread_mutex_t *m, pthread_mutexattr_t *a)
+{
+	(void) a;
+	InitializeCriticalSection(m);
+	
+	return 0;
+}
+
+static int pthread_mutex_destroy(pthread_mutex_t *m)
+{
+	DeleteCriticalSection(m);
+	return 0;
+}
 
 // Use as data member of a class, eg.
 //
@@ -160,4 +192,4 @@ class MutexLockGuard : boost::noncopyable
 // A tempory object doesn't hold the lock for long!
 #define MutexLockGuard(x) error "Missing guard object name"
 
-#endif  // MUDUO_BASE_MUTEX_H
+#endif  // TIM_BASE_MUTEX_H

@@ -1,20 +1,11 @@
-// Copyright 2010, Shuo Chen.  All rights reserved.
-// http://code.google.com/p/muduo/
-//
-// Use of this source code is governed by a BSD-style license
-// that can be found in the License file.
+#ifndef TIM_BASE_FILEUTIL_H
+#define TIM_BASE_FILEUTIL_H
 
-// Author: Shuo Chen (chenshuo at chenshuo dot com)
-//
-// This is a public header file, it must only include public header files.
-
-#ifndef MUDUO_BASE_FILEUTIL_H
-#define MUDUO_BASE_FILEUTIL_H
-
-#include <muduo/base/StringPiece.h>
+#include <tim/base/StringPiece.h>
 #include <boost/noncopyable.hpp>
+#include <Windows.h>
 
-namespace muduo
+namespace tim
 {
 
 namespace FileUtil
@@ -44,7 +35,8 @@ class ReadSmallFile : boost::noncopyable
   static const int kBufferSize = 64*1024;
 
  private:
-  int fd_;
+  //int fd_;
+  HANDLE fd_;
   int err_;
   char buf_[kBufferSize];
 };
@@ -88,5 +80,5 @@ class AppendFile : boost::noncopyable
 
 }
 
-#endif  // MUDUO_BASE_FILEUTIL_H
+#endif  // TIM_BASE_FILEUTIL_H
 

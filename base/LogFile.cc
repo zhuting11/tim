@@ -1,13 +1,13 @@
-#include <muduo/base/LogFile.h>
+#include <tim/base/LogFile.h>
 
-#include <muduo/base/FileUtil.h>
-#include <muduo/base/ProcessInfo.h>
+#include <tim/base/FileUtil.h>
+#include <tim/base/ProcessInfo.h>
 
 #include <assert.h>
 #include <stdio.h>
 #include <time.h>
 
-using namespace muduo;
+using namespace tim;
 
 LogFile::LogFile(const string& basename,
                  size_t rollSize,

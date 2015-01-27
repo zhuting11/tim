@@ -53,7 +53,7 @@ class FixedBuffer : boost::noncopyable
   void add(size_t len) { cur_ += len; }
 
   void reset() { cur_ = data_; }
-  void bzero() { ::bzero(data_, sizeof data_); }
+  void bzero() { /*::bzero(data_, sizeof data_);*/ memset(data_, 0 , sizeof data_); }
 
   // for used by GDB
   const char* debugString();
@@ -132,19 +132,19 @@ class LogStream : boost::noncopyable
     return operator<<(reinterpret_cast<const char*>(str));
   }
 
-  self& operator<<(const string& v)
-  {
-    buffer_.append(v.c_str(), v.size());
-    return *this;
-  }
+  //self& operator<<(const string& v)
+  //{
+  //  buffer_.append(v.c_str(), v.size());
+  //  return *this;
+  //}
 
-#ifndef TIM_STD_STRING
+//#ifndef TIM_STD_STRING
   self& operator<<(const std::string& v)
   {
     buffer_.append(v.c_str(), v.size());
     return *this;
   }
-#endif
+//#endif
 
   self& operator<<(const StringPiece& v)
   {

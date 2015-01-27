@@ -3,10 +3,12 @@
 
 #include <tim/base/StringPiece.h>
 #include <boost/noncopyable.hpp>
-#include <Windows.h>
+#include <tim/base/Mutex.h>
 
 namespace tim
 {
+
+typedef int ssize_t;
 
 namespace FileUtil
 {
@@ -19,9 +21,10 @@ class ReadSmallFile : boost::noncopyable
   ~ReadSmallFile();
 
   // return errno
-  template<typename String>
+ // template<typename String>
   int readToString(int maxSize,
-                   String* content,
+                   //String* content,
+				   std::string* content,
                    int64_t* fileSize,
                    int64_t* modifyTime,
                    int64_t* createTime);
@@ -35,10 +38,11 @@ class ReadSmallFile : boost::noncopyable
   static const int kBufferSize = 64*1024;
 
  private:
-  //int fd_;
-  HANDLE fd_;
+  int fd_;
+  //HANDLE fd_;
   int err_;
   char buf_[kBufferSize];
+  MutexLock mutex_;
 };
 
 // read the file content, returns errno if error happens.

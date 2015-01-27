@@ -1,31 +1,25 @@
-// Copyright 2010, Shuo Chen.  All rights reserved.
-// http://code.google.com/p/muduo/
-//
-// Use of this source code is governed by a BSD-style license
-// that can be found in the License file.
+#ifndef TIM_BASE_PROCESSINFO_H
+#define TIM_BASE_PROCESSINFO_H
 
-// Author: Shuo Chen (chenshuo at chenshuo dot com)
-//
-// This is a public header file, it must only include public header files.
-
-#ifndef MUDUO_BASE_PROCESSINFO_H
-#define MUDUO_BASE_PROCESSINFO_H
-
-#include <muduo/base/StringPiece.h>
-#include <muduo/base/Types.h>
-#include <muduo/base/Timestamp.h>
+#include <tim/base/StringPiece.h>
+#include <tim/base/Types.h>
+#include <tim/base/Timestamp.h>
 #include <vector>
+#include <tim/base/Mutex.h>
 
-namespace muduo
+namespace tim
 {
 
 namespace ProcessInfo
 {
+
+	typedef int uid_t;
+
   pid_t pid();
   string pidString();
-  uid_t uid();
-  string username();
-  uid_t euid();
+  //uid_t uid();
+  //string username();
+  //uid_t euid();
   Timestamp startTime();
   int clockTicksPerSecond();
   int pageSize();
@@ -35,7 +29,7 @@ namespace ProcessInfo
   string procname();
   StringPiece procname(const string& stat);
 
-  /// read /proc/self/status
+ /* /// read /proc/self/status
   string procStatus();
 
   /// read /proc/self/stat
@@ -60,9 +54,9 @@ namespace ProcessInfo
   CpuTime cpuTime();
 
   int numThreads();
-  std::vector<pid_t> threads();
+  std::vector<pid_t> threads();*/
 }
 
 }
 
-#endif  // MUDUO_BASE_PROCESSINFO_H
+#endif  // TIM_BASE_PROCESSINFO_H

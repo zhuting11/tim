@@ -8,8 +8,14 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <sys/stat.h>
+#include <tim/base/dirent.h>
+
+#include <io.h>
+#include <xutility>
+
 
 using namespace tim;
+
 
 
 FileUtil::AppendFile::AppendFile(StringArg filename)
@@ -68,18 +74,18 @@ size_t FileUtil::AppendFile::write(const char* logline, size_t len)
 
 FileUtil::ReadSmallFile::ReadSmallFile(StringArg filename)
   //: fd_(::open(filename.c_str(), O_RDONLY | O_CLOEXEC)),
-  :fd_(CreateFile(filename.c_str(),              
-                       GENERIC_READ,          // open for reading
-                       FILE_SHARE_READ,       // share for reading
-                       NULL,                  // default security
-                       OPEN_EXISTING,         // existing file only
-                       FILE_ATTRIBUTE_NORMAL, // normal file
-                       NULL)),
+  : fd_(_open(filename.c_str(), _O_RDONLY )),
+  //:fd_(CreateFile(filename.c_str(),              
+  //                     GENERIC_READ,          // open for reading
+  //                     FILE_SHARE_READ,       // share for reading
+  //                     NULL,                  // default security
+  //                     OPEN_EXISTING,         // existing file only
+  //                     FILE_ATTRIBUTE_NORMAL, // normal file
+  //                     NULL)),
     err_(0)
 {
   buf_[0] = '\0';
-  //if (fd_ < 0)
-  if(fd_ == INVALID_HANDLE_VALUE)
+  if (fd_ < 0)
   {
     err_ = errno;
   }
@@ -87,27 +93,23 @@ FileUtil::ReadSmallFile::ReadSmallFile(StringArg filename)
 
 FileUtil::ReadSmallFile::~ReadSmallFile()
 {
-  //if (fd_ >= 0)
-  //{
-  //  ::close(fd_); // FIXME: check EINTR
-  //}
-
-  if (fd_)
+  if (fd_ >= 0)
   {
-    CloseHandle(fd_); // FIXME: check EINTR
-	fd_ = 0;
+    ::_close(fd_); // FIXME: check EINTR
   }
+
 }
 
 // return errno
-template<typename String>
+//template<typename String>
 int FileUtil::ReadSmallFile::readToString(int maxSize,
-                                          String* content,
+                                          //String* content,
+										  std::string* content,
                                           int64_t* fileSize,
                                           int64_t* modifyTime,
                                           int64_t* createTime)
 {
-  BOOST_STATIC_ASSERT(sizeof(off_t) == 8);
+  //BOOST_STATIC_ASSERT(sizeof(off_t) == 8);
   assert(content != NULL);
   int err = err_;
   if (fd_ >= 0)
@@ -122,7 +124,7 @@ int FileUtil::ReadSmallFile::readToString(int maxSize,
         if (S_ISREG(statbuf.st_mode))
         {
           *fileSize = statbuf.st_size;
-          content->reserve(static_cast<int>(std::min(implicit_cast<int64_t>(maxSize), *fileSize)));
+          content->reserve(static_cast<int>(min(implicit_cast<int64_t>(maxSize), *fileSize)));
         }
         else if (S_ISDIR(statbuf.st_mode))
         {
@@ -145,8 +147,8 @@ int FileUtil::ReadSmallFile::readToString(int maxSize,
 
     while (content->size() < implicit_cast<size_t>(maxSize))
     {
-      size_t toRead = std::min(implicit_cast<size_t>(maxSize) - content->size(), sizeof(buf_));
-      ssize_t n = ::read(fd_, buf_, toRead);
+      size_t toRead = min( (implicit_cast<size_t>(maxSize) - content->size()), sizeof(buf_));
+      ssize_t n = ::_read(fd_, buf_, toRead);
       if (n > 0)
       {
         content->append(buf_, n);
@@ -169,12 +171,15 @@ int FileUtil::ReadSmallFile::readToBuffer(int* size)
   int err = err_;
   if (fd_ >= 0)
   {
+	  int pos = 0;
+	  ssize_t n = 0;
     //ssize_t n = ::pread(fd_, buf_, sizeof(buf_)-1, 0);
-	DWORD n = 0;
-	OVERLAPPED ov = {0};
-    ov.Offset = 0;
-    ov.OffsetHigh = 0;
-	bool res = ReadFile(fd_, buf_, sizeof(buf_)-1, &n, &ov);
+	  {
+		MutexLockGuard mg(mutex_);
+		pos = _lseek(fd_, 0, SEEK_SET);	
+		n = _read(fd_, buf_, sizeof(buf_)-1);
+	  }
+
     if (n >= 0)
     {
       if (size)
@@ -202,14 +207,14 @@ int FileUtil::ReadSmallFile::readToBuffer(int* size)
 //    int64_t*, int64_t*, int64_t*);
 
 //#ifndef TIM_STD_STRING
-template int FileUtil::readFile(StringArg filename,
-                                int maxSize,
-                                std::string* content,
-                                int64_t*, int64_t*, int64_t*);
-
-template int FileUtil::ReadSmallFile::readToString(
-    int maxSize,
-    std::string* content,
-    int64_t*, int64_t*, int64_t*);
+//template int FileUtil::readFile(StringArg filename,
+//                                int maxSize,
+//                                std::string* content,
+//                                int64_t*, int64_t*, int64_t*);
+//
+//template int FileUtil::ReadSmallFile::readToString(
+//    int maxSize,
+//    std::string* content,
+//    int64_t*, int64_t*, int64_t*);
 //#endif
 

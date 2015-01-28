@@ -1,20 +1,20 @@
-#ifndef MUDUO_BASE_ASYNCLOGGING_H
-#define MUDUO_BASE_ASYNCLOGGING_H
+#ifndef TIM_BASE_ASYNCLOGGING_H
+#define TIM_BASE_ASYNCLOGGING_H
 
-#include <muduo/base/BlockingQueue.h>
-#include <muduo/base/BoundedBlockingQueue.h>
-#include <muduo/base/CountDownLatch.h>
-#include <muduo/base/Mutex.h>
-#include <muduo/base/Thread.h>
+#include <tim/base/BlockingQueue.h>
+#include <tim/base/BoundedBlockingQueue.h>
+#include <tim/base/CountDownLatch.h>
+#include <tim/base/Mutex.h>
+#include <tim/base/Thread.h>
 
-#include <muduo/base/LogStream.h>
+#include <tim/base/LogStream.h>
 
 #include <boost/bind.hpp>
 #include <boost/noncopyable.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <boost/ptr_container/ptr_vector.hpp>
 
-namespace muduo
+namespace tim
 {
 
 class AsyncLogging : boost::noncopyable
@@ -57,7 +57,7 @@ class AsyncLogging : boost::noncopyable
 
   void threadFunc();
 
-  typedef muduo::detail::FixedBuffer<muduo::detail::kLargeBuffer> Buffer;
+  typedef tim::detail::FixedBuffer<tim::detail::kLargeBuffer> Buffer;
   typedef boost::ptr_vector<Buffer> BufferVector;
   typedef BufferVector::auto_type BufferPtr;
 
@@ -65,14 +65,14 @@ class AsyncLogging : boost::noncopyable
   bool running_;
   string basename_;
   size_t rollSize_;
-  muduo::Thread thread_;
-  muduo::CountDownLatch latch_;
-  muduo::MutexLock mutex_;
-  muduo::Condition cond_;
+  tim::Thread thread_;
+  tim::CountDownLatch latch_;
+  tim::MutexLock mutex_;
+  tim::Condition cond_;
   BufferPtr currentBuffer_;
   BufferPtr nextBuffer_;
   BufferVector buffers_;
 };
 
 }
-#endif  // MUDUO_BASE_ASYNCLOGGING_H
+#endif  // TIM_BASE_ASYNCLOGGING_H

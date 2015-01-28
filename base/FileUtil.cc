@@ -23,7 +23,7 @@ FileUtil::AppendFile::AppendFile(StringArg filename)
   : fp_(NULL),  // 'e' for O_CLOEXEC
     writtenBytes_(0)
 {
-  ::fopen_s(&fp_, filename.c_str(), "ae");  // 'e' for O_CLOEXEC
+  ::fopen_s(&fp_, filename.c_str(), "a");  // 'e' for O_CLOEXEC
   assert(fp_);
   //::setbuffer(fp_, buffer_, sizeof buffer_);
   setvbuf(fp_, buffer_, buffer_ ? _IOFBF : _IONBF, sizeof buffer_);

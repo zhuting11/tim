@@ -1,10 +1,10 @@
-#include <muduo/base/AsyncLogging.h>
-#include <muduo/base/LogFile.h>
-#include <muduo/base/Timestamp.h>
+#include <tim/base/AsyncLogging.h>
+#include <tim/base/LogFile.h>
+#include <tim/base/Timestamp.h>
 
 #include <stdio.h>
 
-using namespace muduo;
+using namespace tim;
 
 AsyncLogging::AsyncLogging(const string& basename,
                            size_t rollSize,
@@ -28,7 +28,7 @@ AsyncLogging::AsyncLogging(const string& basename,
 
 void AsyncLogging::append(const char* logline, int len)
 {
-  muduo::MutexLockGuard lock(mutex_);
+  tim::MutexLockGuard lock(mutex_);
   if (currentBuffer_->avail() > len)
   {
     currentBuffer_->append(logline, len);
@@ -68,7 +68,7 @@ void AsyncLogging::threadFunc()
     assert(buffersToWrite.empty());
 
     {
-      muduo::MutexLockGuard lock(mutex_);
+      tim::MutexLockGuard lock(mutex_);
       if (buffers_.empty())  // unusual usage!
       {
         cond_.waitForSeconds(flushInterval_);
@@ -87,7 +87,7 @@ void AsyncLogging::threadFunc()
     if (buffersToWrite.size() > 25)
     {
       char buf[256];
-      snprintf(buf, sizeof buf, "Dropped log messages at %s, %zd larger buffers\n",
+      _snprintf_s(buf, sizeof buf, "Dropped log messages at %s, %zd larger buffers\n",
                Timestamp::now().toFormattedString().c_str(),
                buffersToWrite.size()-2);
       fputs(buf, stderr);

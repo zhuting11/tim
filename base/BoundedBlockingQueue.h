@@ -1,19 +1,14 @@
-// Use of this source code is governed by a BSD-style license
-// that can be found in the License file.
-//
-// Author: Shuo Chen (chenshuo at chenshuo dot com)
+#ifndef TIM_BASE_BOUNDEDBLOCKINGQUEUE_H
+#define TIM_BASE_BOUNDEDBLOCKINGQUEUE_H
 
-#ifndef MUDUO_BASE_BOUNDEDBLOCKINGQUEUE_H
-#define MUDUO_BASE_BOUNDEDBLOCKINGQUEUE_H
-
-#include <muduo/base/Condition.h>
-#include <muduo/base/Mutex.h>
+#include <tim/base/Condition.h>
+#include <tim/base/Mutex.h>
 
 #include <boost/circular_buffer.hpp>
 #include <boost/noncopyable.hpp>
 #include <assert.h>
 
-namespace muduo
+namespace tim
 {
 
 template<typename T>

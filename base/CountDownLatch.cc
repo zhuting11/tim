@@ -1,11 +1,6 @@
-// Use of this source code is governed by a BSD-style license
-// that can be found in the License file.
-//
-// Author: Shuo Chen (chenshuo at chenshuo dot com)
+#include <tim/base/CountDownLatch.h>
 
-#include <muduo/base/CountDownLatch.h>
-
-using namespace muduo;
+using namespace tim;
 
 CountDownLatch::CountDownLatch(int count)
   : mutex_(),

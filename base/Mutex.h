@@ -38,6 +38,8 @@ namespace tim
 typedef CRITICAL_SECTION pthread_mutex_t;
 typedef void pthread_mutexattr_t;
 typedef int  pid_t;
+
+#define ETIMEDOUT_TIM	110
 static int pthread_mutex_lock(pthread_mutex_t *m)
 {
 	EnterCriticalSection(m);

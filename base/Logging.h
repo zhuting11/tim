@@ -8,6 +8,9 @@ namespace tim
 {
 
 //class TimeZone;
+#if defined ( WIN32 )
+#define __func__ __FUNCTION__
+#endif
 
 class Logger
 {
@@ -119,9 +122,9 @@ inline Logger::LogLevel Logger::logLevel()
 //
 #define LOG_TRACE if (tim::Logger::logLevel() <= tim::Logger::TRACE) \
   tim::Logger(__FILE__, __LINE__, tim::Logger::TRACE, __func__).stream()
-#define LOG_DEBUG if (muduo::Logger::logLevel() <= muduo::Logger::DEBUG) \
+#define LOG_DEBUG if (tim::Logger::logLevel() <= tim::Logger::DEBUG) \
   tim::Logger(__FILE__, __LINE__, tim::Logger::DEBUG, __func__).stream()
-#define LOG_INFO if (muduo::Logger::logLevel() <= muduo::Logger::INFO) \
+#define LOG_INFO if (tim::Logger::logLevel() <= tim::Logger::INFO) \
   tim::Logger(__FILE__, __LINE__).stream()
 #define LOG_WARN tim::Logger(__FILE__, __LINE__, tim::Logger::WARN).stream()
 #define LOG_ERROR tim::Logger(__FILE__, __LINE__, tim::Logger::ERR).stream()

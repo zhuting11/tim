@@ -1,15 +1,10 @@
-// Use of this source code is governed by a BSD-style license
-// that can be found in the License file.
-//
-// Author: Shuo Chen (chenshuo at chenshuo dot com)
+#ifndef TIM_BASE_THREADPOOL_H
+#define TIM_BASE_THREADPOOL_H
 
-#ifndef MUDUO_BASE_THREADPOOL_H
-#define MUDUO_BASE_THREADPOOL_H
-
-#include <muduo/base/Condition.h>
-#include <muduo/base/Mutex.h>
-#include <muduo/base/Thread.h>
-#include <muduo/base/Types.h>
+#include <tim/base/Condition.h>
+#include <tim/base/Mutex.h>
+#include <tim/base/Thread.h>
+#include <tim/base/Types.h>
 
 #include <boost/function.hpp>
 #include <boost/noncopyable.hpp>
@@ -17,7 +12,7 @@
 
 #include <deque>
 
-namespace muduo
+namespace tim
 {
 
 class ThreadPool : boost::noncopyable
@@ -52,7 +47,7 @@ class ThreadPool : boost::noncopyable
   Condition notFull_;
   string name_;
   Task threadInitCallback_;
-  boost::ptr_vector<muduo::Thread> threads_;
+  boost::ptr_vector<tim::Thread> threads_;
   std::deque<Task> queue_;
   size_t maxQueueSize_;
   bool running_;

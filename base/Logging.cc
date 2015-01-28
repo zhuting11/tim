@@ -73,7 +73,7 @@ const char* LogLevelName[Logger::NUM_LOG_LEVELS] =
   "DEBUG ",
   "INFO  ",
   "WARN  ",
-  "ERR ",
+  "ERR   ",
   "FATAL ",
 };
 
@@ -156,7 +156,8 @@ void Logger::Impl::formatTime()
     //}
     //else
     //{
-    ::gmtime_r(&seconds, &tm_time); // FIXME TimeZone::fromUtcTime
+    //::gmtime_r(&seconds, &tm_time); // FIXME TimeZone::fromUtcTime
+	localtime_s(&tm_time, &seconds);
     //}
 
     int len = _snprintf_s(t_time, sizeof(t_time), "%4d%02d%02d %02d:%02d:%02d",

@@ -1,17 +1,12 @@
-// Use of this source code is governed by a BSD-style license
-// that can be found in the License file.
-//
-// Author: Shuo Chen (chenshuo at chenshuo dot com)
+#include <tim/base/ThreadPool.h>
 
-#include <muduo/base/ThreadPool.h>
-
-#include <muduo/base/Exception.h>
+#include <tim/base/Exception.h>
 
 #include <boost/bind.hpp>
 #include <assert.h>
 #include <stdio.h>
 
-using namespace muduo;
+using namespace tim;
 
 ThreadPool::ThreadPool(const string& name)
   : mutex_(),
@@ -39,8 +34,8 @@ void ThreadPool::start(int numThreads)
   for (int i = 0; i < numThreads; ++i)
   {
     char id[32];
-    snprintf(id, sizeof id, "%d", i+1);
-    threads_.push_back(new muduo::Thread(
+    _snprintf_s(id, sizeof id, "%d", i+1);
+    threads_.push_back(new tim::Thread(
           boost::bind(&ThreadPool::runInThread, this), name_+id));
     threads_[i].start();
   }
@@ -59,7 +54,7 @@ void ThreadPool::stop()
   }
   for_each(threads_.begin(),
            threads_.end(),
-           boost::bind(&muduo::Thread::join, _1));
+           boost::bind(&tim::Thread::join, _1));
 }
 
 void ThreadPool::run(const Task& task)

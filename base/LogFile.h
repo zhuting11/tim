@@ -3,9 +3,9 @@
 
 #include <tim/base/Mutex.h>
 #include <tim/base/Types.h>
-
 #include <boost/noncopyable.hpp>
 #include <boost/scoped_ptr.hpp>
+#include <deque>
 
 namespace tim
 {
@@ -20,6 +20,7 @@ class LogFile : boost::noncopyable
  public:
   LogFile(const string& basename,
           size_t rollSize,
+		  size_t rollFileCnt = 10, //by tim , 0< rollFileCnt < kRollFileCntMax(1024), if = 0 then always roll 
           bool threadSafe = true,
           int flushInterval = 3,
           int checkEveryN = 1024);
@@ -31,6 +32,9 @@ class LogFile : boost::noncopyable
 
  private:
   void append_unlocked(const char* logline, int len);
+
+    //by zhuting(TIM)
+  void checkRollFileCount(const char* fileName);
 
   static string getLogFileName(const string& basename, time_t* now);
 
@@ -48,6 +52,11 @@ class LogFile : boost::noncopyable
   boost::scoped_ptr<FileUtil::AppendFile> file_;
 
   const static int kRollPerSeconds_ = 60*60*24;
+
+  //by TIM
+  const static int kRollFileCntMax = 1024;
+  size_t rollFileCnt_;
+  std::deque<std::string> rollFileNames_;
 };
 
 }

@@ -1,22 +1,13 @@
-// Copyright 2010, Shuo Chen.  All rights reserved.
-// http://code.google.com/p/muduo/
-//
-// Use of this source code is governed by a BSD-style license
-// that can be found in the License file.
+#ifndef TIM_NET_INETADDRESS_H
+#define TIM_NET_INETADDRESS_H
 
-// Author: Shuo Chen (chenshuo at chenshuo dot com)
-//
-// This is a public header file, it must only include public header files.
+#include <tim/base/copyable.h>
+#include <tim/base/StringPiece.h>
 
-#ifndef MUDUO_NET_INETADDRESS_H
-#define MUDUO_NET_INETADDRESS_H
+//#include <netinet/in.h>
+#include <winsock2.h>
 
-#include <muduo/base/copyable.h>
-#include <muduo/base/StringPiece.h>
-
-#include <netinet/in.h>
-
-namespace muduo
+namespace tim
 {
 namespace net
 {
@@ -25,7 +16,7 @@ namespace net
 /// Wrapper of sockaddr_in.
 ///
 /// This is an POD interface class.
-class InetAddress : public muduo::copyable
+class InetAddress : public tim::copyable
 {
  public:
   /// Constructs an endpoint with given port number.
@@ -66,4 +57,4 @@ class InetAddress : public muduo::copyable
 }
 }
 
-#endif  // MUDUO_NET_INETADDRESS_H
+#endif  // TIM_NET_INETADDRESS_H

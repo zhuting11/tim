@@ -1,24 +1,17 @@
-// Copyright 2010, Shuo Chen.  All rights reserved.
-// http://code.google.com/p/muduo/
-//
-// Use of this source code is governed by a BSD-style license
-// that can be found in the License file.
+#ifndef TIM_NET_SOCKETSOPS_H
+#define TIM_NET_SOCKETSOPS_H
 
-// Author: Shuo Chen (chenshuo at chenshuo dot com)
-//
-// This is an internal header file, you should not include this.
+//#include <arpa/inet.h>
+#include <WinSock2.h>
 
-#ifndef MUDUO_NET_SOCKETSOPS_H
-#define MUDUO_NET_SOCKETSOPS_H
-
-#include <arpa/inet.h>
-
-namespace muduo
+namespace tim
 {
 namespace net
 {
 namespace sockets
 {
+
+typedef   int   ssize_t;
 
 ///
 /// Creates a non-blocking socket file descriptor,
@@ -39,7 +32,7 @@ void toIpPort(char* buf, size_t size,
               const struct sockaddr_in& addr);
 void toIp(char* buf, size_t size,
           const struct sockaddr_in& addr);
-void fromIpPort(const char* ip, uint16_t port,
+void fromIpPort(const char* ip, unsigned short port,
                   struct sockaddr_in* addr);
 
 int getSocketError(int sockfd);
@@ -52,4 +45,4 @@ bool isSelfConnect(int sockfd);
 }
 }
 
-#endif  // MUDUO_NET_SOCKETSOPS_H
+#endif  // TIM_NET_SOCKETSOPS_H

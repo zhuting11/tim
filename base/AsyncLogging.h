@@ -23,6 +23,7 @@ class AsyncLogging : boost::noncopyable
 
   AsyncLogging(const string& basename,
                size_t rollSize,
+			   size_t rollFileCnt = 10, //by tim
                int flushInterval = 3);
 
   ~AsyncLogging()
@@ -72,6 +73,8 @@ class AsyncLogging : boost::noncopyable
   BufferPtr currentBuffer_;
   BufferPtr nextBuffer_;
   BufferVector buffers_;
+
+  size_t rollFileCnt_; //by tim
 };
 
 }

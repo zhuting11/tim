@@ -8,11 +8,13 @@ using namespace tim;
 
 AsyncLogging::AsyncLogging(const string& basename,
                            size_t rollSize,
+						   size_t rollFileCnt,
                            int flushInterval)
   : flushInterval_(flushInterval),
     running_(false),
     basename_(basename),
     rollSize_(rollSize),
+	rollFileCnt_(rollFileCnt),
     thread_(boost::bind(&AsyncLogging::threadFunc, this), "Logging"),
     latch_(1),
     mutex_(),
@@ -54,7 +56,7 @@ void AsyncLogging::threadFunc()
 {
   assert(running_ == true);
   latch_.countDown();
-  LogFile output(basename_, rollSize_, false);
+  LogFile output(basename_, rollSize_, rollFileCnt_, false);
   BufferPtr newBuffer1(new Buffer);
   BufferPtr newBuffer2(new Buffer);
   newBuffer1->bzero();

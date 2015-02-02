@@ -11,11 +11,13 @@ using namespace tim;
 
 LogFile::LogFile(const string& basename,
                  size_t rollSize,
+				 size_t rollFileCnt,
                  bool threadSafe,
                  int flushInterval,
                  int checkEveryN)
   : basename_(basename),
     rollSize_(rollSize),
+	rollFileCnt_(rollFileCnt),
     flushInterval_(flushInterval),
     checkEveryN_(checkEveryN),
     count_(0),
@@ -99,6 +101,7 @@ bool LogFile::rollFile()
     lastFlush_ = now;
     startOfPeriod_ = start;
     file_.reset(new FileUtil::AppendFile(filename));
+	checkRollFileCount(filename.c_str()); //by tim
     return true;
   }
   return false;
@@ -127,5 +130,23 @@ string LogFile::getLogFileName(const string& basename, time_t* now)
   filename += ".log";
 
   return filename;
+}
+
+void LogFile::checkRollFileCount(const char* fileName)
+{
+	if(rollFileCnt_ < 1) return;
+
+	if(rollFileCnt_ > kRollFileCntMax) 
+		rollFileCnt_ = kRollFileCntMax;
+
+	std::string strFile(fileName);
+	rollFileNames_.push_back(strFile);
+
+	if (rollFileNames_.size() > rollFileCnt_)
+	{
+		std::remove(rollFileNames_.front().c_str());
+		rollFileNames_.pop_front();
+	}
+
 }
 

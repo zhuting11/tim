@@ -1,21 +1,11 @@
-// Copyright 2010, Shuo Chen.  All rights reserved.
-// http://code.google.com/p/muduo/
-//
-// Use of this source code is governed by a BSD-style license
-// that can be found in the License file.
+#ifndef TIM_NET_TCPCONNECTION_H
+#define TIM_NET_TCPCONNECTION_H
 
-// Author: Shuo Chen (chenshuo at chenshuo dot com)
-//
-// This is a public header file, it must only include public header files.
-
-#ifndef MUDUO_NET_TCPCONNECTION_H
-#define MUDUO_NET_TCPCONNECTION_H
-
-#include <muduo/base/StringPiece.h>
-#include <muduo/base/Types.h>
-#include <muduo/net/Callbacks.h>
-#include <muduo/net/Buffer.h>
-#include <muduo/net/InetAddress.h>
+#include <tim/base/StringPiece.h>
+#include <tim/base/Types.h>
+#include <tim/net/Callbacks.h>
+#include <tim/net/Buffer.h>
+#include <tim/net/InetAddress.h>
 
 #include <boost/any.hpp>
 #include <boost/enable_shared_from_this.hpp>
@@ -26,7 +16,7 @@
 // struct tcp_info is in <netinet/tcp.h>
 struct tcp_info;
 
-namespace muduo
+namespace tim
 {
 namespace net
 {

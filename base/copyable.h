@@ -1,7 +1,7 @@
-#ifndef MUDUO_BASE_COPYABLE_H
-#define MUDUO_BASE_COPYABLE_H
+#ifndef TIM_BASE_COPYABLE_H
+#define TIM_BASE_COPYABLE_H
 
-namespace muduo
+namespace tim
 {
 
 /// A tag class emphasises the objects are copyable.
@@ -13,4 +13,4 @@ class copyable
 
 };
 
-#endif  // MUDUO_BASE_COPYABLE_H
+#endif  // TIM_BASE_COPYABLE_H

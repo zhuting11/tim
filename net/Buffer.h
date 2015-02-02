@@ -1,21 +1,14 @@
 // Copyright 2010, Shuo Chen.  All rights reserved.
 // http://code.google.com/p/muduo/
 //
-// Use of this source code is governed by a BSD-style license
-// that can be found in the License file.
+#ifndef TIM_NET_BUFFER_H
+#define TIM_NET_BUFFER_H
 
-// Author: Shuo Chen (chenshuo at chenshuo dot com)
-//
-// This is a public header file, it must only include public header files.
+#include <tim/base/copyable.h>
+#include <tim/base/StringPiece.h>
+#include <tim/base/Types.h>
 
-#ifndef MUDUO_NET_BUFFER_H
-#define MUDUO_NET_BUFFER_H
-
-#include <muduo/base/copyable.h>
-#include <muduo/base/StringPiece.h>
-#include <muduo/base/Types.h>
-
-#include <muduo/net/Endian.h>
+#include <tim/net/Endian.h>
 
 #include <algorithm>
 #include <vector>
@@ -24,10 +17,11 @@
 #include <string.h>
 //#include <unistd.h>  // ssize_t
 
-namespace muduo
+namespace tim
 {
 namespace net
 {
+	typedef int ssize_t;
 
 /// A buffer class modeled after org.jboss.netty.buffer.ChannelBuffer
 ///
@@ -39,7 +33,7 @@ namespace net
 /// |                   |                  |                  |
 /// 0      <=      readerIndex   <=   writerIndex    <=     size
 /// @endcode
-class Buffer : public muduo::copyable
+class Buffer : public tim::copyable
 {
  public:
   static const size_t kCheapPrepend = 8;
@@ -373,4 +367,4 @@ class Buffer : public muduo::copyable
 }
 }
 
-#endif  // MUDUO_NET_BUFFER_H
+#endif  // TIM_NET_BUFFER_H

@@ -1,28 +1,28 @@
-// Copyright 2010, Shuo Chen.  All rights reserved.
-// http://code.google.com/p/muduo/
-//
-// Use of this source code is governed by a BSD-style license
-// that can be found in the License file.
+#include <tim/net/InetAddress.h>
 
-// Author: Shuo Chen (chenshuo at chenshuo dot com)
+#include <tim/base/Logging.h>
+#include <tim/net/Endian.h>
+#include <tim/net/SocketsOps.h>
 
-#include <muduo/net/InetAddress.h>
-
-#include <muduo/base/Logging.h>
-#include <muduo/net/Endian.h>
-#include <muduo/net/SocketsOps.h>
-
-#include <netdb.h>
-#include <strings.h>  // bzero
-#include <netinet/in.h>
+//#include <netdb.h>
+//#include <strings.h>  // bzero
+//#include <netinet/in.h>
 
 #include <boost/static_assert.hpp>
 
-// INADDR_ANY use (type)value casting.
-#pragma GCC diagnostic ignored "-Wold-style-cast"
+#ifdef WIN32
+#define bzero(a,b) memset(a, 0, b)
+#endif // WIN32
+
+
+//// INADDR_ANY use (type)value casting.
+//#pragma GCC diagnostic ignored "-Wold-style-cast"
+
+
+typedef uint32_t in_addr_t;
 static const in_addr_t kInaddrAny = INADDR_ANY;
 static const in_addr_t kInaddrLoopback = INADDR_LOOPBACK;
-#pragma GCC diagnostic error "-Wold-style-cast"
+//#pragma GCC diagnostic error "-Wold-style-cast"
 
 //     /* Structure describing an Internet socket address.  */
 //     struct sockaddr_in {
@@ -37,14 +37,15 @@ static const in_addr_t kInaddrLoopback = INADDR_LOOPBACK;
 //         in_addr_t       s_addr;     /* address in network byte order */
 //     };
 
-using namespace muduo;
-using namespace muduo::net;
+using namespace tim;
+using namespace tim::net;
 
 BOOST_STATIC_ASSERT(sizeof(InetAddress) == sizeof(struct sockaddr_in));
 
 InetAddress::InetAddress(uint16_t port, bool loopbackOnly)
 {
-  bzero(&addr_, sizeof addr_);
+  //bzero(&addr_, sizeof addr_);
+  memset(&addr_, 0, sizeof addr_);
   addr_.sin_family = AF_INET;
   in_addr_t ip = loopbackOnly ? kInaddrLoopback : kInaddrAny;
   addr_.sin_addr.s_addr = sockets::hostToNetwork32(ip);
@@ -71,7 +72,7 @@ string InetAddress::toIp() const
   return buf;
 }
 
-static __thread char t_resolveBuffer[64 * 1024];
+static __declspec(thread) char t_resolveBuffer[64 * 1024];
 
 bool InetAddress::resolve(StringArg hostname, InetAddress* out)
 {
@@ -81,8 +82,10 @@ bool InetAddress::resolve(StringArg hostname, InetAddress* out)
   int herrno = 0;
   bzero(&hent, sizeof(hent));
 
-  int ret = gethostbyname_r(hostname.c_str(), &hent, t_resolveBuffer, sizeof t_resolveBuffer, &he, &herrno);
-  if (ret == 0 && he != NULL)
+  //int ret = gethostbyname_r(hostname.c_str(), &hent, t_resolveBuffer, sizeof t_resolveBuffer, &he, &herrno);
+  he = gethostbyname(hostname.c_str());
+  //if (ret == 0 && he != NULL)
+  if (he != NULL)
   {
     assert(he->h_addrtype == AF_INET && he->h_length == sizeof(uint32_t));
     out->addr_.sin_addr = *reinterpret_cast<struct in_addr*>(he->h_addr);
@@ -90,10 +93,10 @@ bool InetAddress::resolve(StringArg hostname, InetAddress* out)
   }
   else
   {
-    if (ret)
-    {
-      LOG_SYSERR << "InetAddress::resolve";
-    }
+    //if (ret)
+    //{
+    LOG_SYSERR << "InetAddress::resolve";
+    //}
     return false;
   }
 }

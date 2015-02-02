@@ -1,22 +1,12 @@
-// Copyright 2010, Shuo Chen.  All rights reserved.
-// http://code.google.com/p/muduo/
-//
-// Use of this source code is governed by a BSD-style license
-// that can be found in the License file.
-
-// Author: Shuo Chen (chenshuo at chenshuo dot com)
-//
-// This is a public header file, it must only include public header files.
-
-#ifndef MUDUO_NET_TCPCLIENT_H
-#define MUDUO_NET_TCPCLIENT_H
+#ifndef TIM_NET_TCPCLIENT_H
+#define TIM_NET_TCPCLIENT_H
 
 #include <boost/noncopyable.hpp>
 
-#include <muduo/base/Mutex.h>
-#include <muduo/net/TcpConnection.h>
+#include <tim/base/Mutex.h>
+#include <tim/net/TcpConnection.h>
 
-namespace muduo
+namespace tim
 {
 namespace net
 {

@@ -1,29 +1,23 @@
-// Copyright 2010, Shuo Chen.  All rights reserved.
-// http://code.google.com/p/muduo/
-//
-// Use of this source code is governed by a BSD-style license
-// that can be found in the License file.
-
-// Author: Shuo Chen (chenshuo at chenshuo dot com)
-
 #define __STDC_LIMIT_MACROS
-#include <muduo/net/TimerQueue.h>
+#include <tim/net/TimerQueue.h>
 
-#include <muduo/base/Logging.h>
-#include <muduo/net/EventLoop.h>
-#include <muduo/net/Timer.h>
-#include <muduo/net/TimerId.h>
+#include <tim/base/Logging.h>
+#include <tim/net/EventLoop.h>
+#include <tim/net/Timer.h>
+#include <tim/net/TimerId.h>
+#include <tim/base/Condition.h>
 
 #include <boost/bind.hpp>
 
-#include <sys/timerfd.h>
+//#include <sys/timerfd.h>
 
-namespace muduo
+namespace tim
 {
 namespace net
 {
 namespace detail
 {
+	typedef int ssize_t;
 
 int createTimerfd()
 {
@@ -82,16 +76,17 @@ void resetTimerfd(int timerfd, Timestamp expiration)
 }
 }
 
-using namespace muduo;
-using namespace muduo::net;
-using namespace muduo::net::detail;
+using namespace tim;
+using namespace tim::net;
+using namespace tim::net::detail;
 
 TimerQueue::TimerQueue(EventLoop* loop)
   : loop_(loop),
     timerfd_(createTimerfd()),
     timerfdChannel_(loop, timerfd_),
     timers_(),
-    callingExpiredTimers_(false)
+    callingExpiredTimers_(false),
+	hTimer_(CreateWaitableTimer(NULL, TRUE, NULL)) // by tim
 {
   timerfdChannel_.setReadCallback(
       boost::bind(&TimerQueue::handleRead, this));
@@ -270,5 +265,39 @@ bool TimerQueue::insert(Timer* timer)
 
   assert(timers_.size() == activeTimers_.size());
   return earliestChanged;
+}
+
+//by zhuting(tim)
+void resetTimerInThread()
+{
+	HANDLE hTimer = NULL;
+    LARGE_INTEGER liDueTime;
+
+    liDueTime.QuadPart = -100000000LL;
+
+    // Create an unnamed waitable timer.
+    hTimer = CreateWaitableTimer(NULL, TRUE, NULL);
+    if (NULL == hTimer)
+    {
+        printf("CreateWaitableTimer failed (%d)\n", GetLastError());
+        return 1;
+    }
+
+    printf("Waiting for 10 seconds...\n");
+
+    // Set a timer to wait for 10 seconds.
+    if (!SetWaitableTimer(hTimer, &liDueTime, 0, NULL, NULL, 0))
+    {
+        printf("SetWaitableTimer failed (%d)\n", GetLastError());
+        return 2;
+    }
+
+    // Wait for the timer.
+
+    if (WaitForSingleObject(hTimer, INFINITE) != WAIT_OBJECT_0)
+        printf("WaitForSingleObject failed (%d)\n", GetLastError());
+    else printf("Timer was signaled.\n");
+
+    return 0;
 }
 

@@ -1,24 +1,14 @@
-// Copyright 2010, Shuo Chen.  All rights reserved.
-// http://code.google.com/p/muduo/
-//
-// Use of this source code is governed by a BSD-style license
-// that can be found in the License file.
-
-// Author: Shuo Chen (chenshuo at chenshuo dot com)
-//
-// This is an internal header file, you should not include this.
-
-#ifndef MUDUO_NET_POLLER_H
-#define MUDUO_NET_POLLER_H
+#ifndef TIM_NET_POLLER_H
+#define TIM_NET_POLLER_H
 
 #include <map>
 #include <vector>
 #include <boost/noncopyable.hpp>
 
-#include <muduo/base/Timestamp.h>
-#include <muduo/net/EventLoop.h>
+#include <tim/base/Timestamp.h>
+#include <tim/net/EventLoop.h>
 
-namespace muduo
+namespace tim
 {
 namespace net
 {
@@ -68,4 +58,4 @@ class Poller : boost::noncopyable
 
 }
 }
-#endif  // MUDUO_NET_POLLER_H
+#endif  // TIM_NET_POLLER_H

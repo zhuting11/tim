@@ -1,17 +1,9 @@
-// Copyright 2010, Shuo Chen.  All rights reserved.
-// http://code.google.com/p/muduo/
-//
-// Use of this source code is governed by a BSD-style license
-// that can be found in the License file.
+#include <tim/net/Poller.h>
 
-// Author: Shuo Chen (chenshuo at chenshuo dot com)
+#include <tim/net/Channel.h>
 
-#include <muduo/net/Poller.h>
-
-#include <muduo/net/Channel.h>
-
-using namespace muduo;
-using namespace muduo::net;
+using namespace tim;
+using namespace tim::net;
 
 Poller::Poller(EventLoop* loop)
   : ownerLoop_(loop)

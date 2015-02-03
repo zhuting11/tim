@@ -1,23 +1,16 @@
-// Copyright 2010, Shuo Chen.  All rights reserved.
-// http://code.google.com/p/muduo/
-//
-// Use of this source code is governed by a BSD-style license
-// that can be found in the License file.
+#include <tim/net/poller/PollPoller.h>
 
-// Author: Shuo Chen (chenshuo at chenshuo dot com)
-
-#include <muduo/net/poller/PollPoller.h>
-
-#include <muduo/base/Logging.h>
-#include <muduo/base/Types.h>
-#include <muduo/net/Channel.h>
+#include <tim/base/Logging.h>
+#include <tim/base/Types.h>
+#include <tim/net/Channel.h>
 
 #include <assert.h>
 #include <errno.h>
-#include <poll.h>
+//#include <poll.h>
+#include <WinSock2.h>
 
-using namespace muduo;
-using namespace muduo::net;
+using namespace tim;
+using namespace tim::net;
 
 PollPoller::PollPoller(EventLoop* loop)
   : Poller(loop)
@@ -31,7 +24,8 @@ PollPoller::~PollPoller()
 Timestamp PollPoller::poll(int timeoutMs, ChannelList* activeChannels)
 {
   // XXX pollfds_ shouldn't change
-  int numEvents = ::poll(&*pollfds_.begin(), pollfds_.size(), timeoutMs);
+  //int numEvents = ::poll(&*pollfds_.begin(), pollfds_.size(), timeoutMs);
+  int numEvents = ::WSAPoll(&*pollfds_.begin(), pollfds_.size(), timeoutMs);
   int savedErrno = errno;
   Timestamp now(Timestamp::now());
   if (numEvents > 0)

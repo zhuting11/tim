@@ -1,23 +1,13 @@
-// Copyright 2010, Shuo Chen.  All rights reserved.
-// http://code.google.com/p/muduo/
-//
-// Use of this source code is governed by a BSD-style license
-// that can be found in the License file.
-
-// Author: Shuo Chen (chenshuo at chenshuo dot com)
-//
-// This is an internal header file, you should not include this.
-
-#ifndef MUDUO_NET_TIMER_H
-#define MUDUO_NET_TIMER_H
+#ifndef TIM_NET_TIMER_H
+#define TIM_NET_TIMER_H
 
 #include <boost/noncopyable.hpp>
 
-#include <muduo/base/Atomic.h>
-#include <muduo/base/Timestamp.h>
-#include <muduo/net/Callbacks.h>
+#include <tim/base/Atomic.h>
+#include <tim/base/Timestamp.h>
+#include <tim/net/Callbacks.h>
 
-namespace muduo
+namespace tim
 {
 namespace net
 {
@@ -65,8 +55,9 @@ class Timer : boost::noncopyable
   const bool repeat_;
   const int64_t sequence_;
 
-  static AtomicInt64 s_numCreated_;
+  //static AtomicInt64 s_numCreated_;
+  static AtomicInt32 s_numCreated_;
 };
 }
 }
-#endif  // MUDUO_NET_TIMER_H
+#endif  // TIM_NET_TIMER_H

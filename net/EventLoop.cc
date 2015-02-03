@@ -1,59 +1,91 @@
-// Copyright 2010, Shuo Chen.  All rights reserved.
-// http://code.google.com/p/muduo/
-//
-// Use of this source code is governed by a BSD-style license
-// that can be found in the License file.
+#include <tim/net/EventLoop.h>
 
-// Author: Shuo Chen (chenshuo at chenshuo dot com)
-
-#include <muduo/net/EventLoop.h>
-
-#include <muduo/base/Logging.h>
-#include <muduo/base/Mutex.h>
-#include <muduo/net/Channel.h>
-#include <muduo/net/Poller.h>
-#include <muduo/net/SocketsOps.h>
-#include <muduo/net/TimerQueue.h>
+#include <tim/base/Logging.h>
+#include <tim/base/Mutex.h>
+#include <tim/net/Channel.h>
+#include <tim/net/Poller.h>
+#include <tim/net/SocketsOps.h>
+#include <tim/net/TimerQueue.h>
 
 #include <boost/bind.hpp>
 
 #include <signal.h>
-#include <sys/eventfd.h>
+//#include <sys/eventfd.h>
 
-using namespace muduo;
-using namespace muduo::net;
+using namespace tim;
+using namespace tim::net;
 
 namespace
 {
-__thread EventLoop* t_loopInThisThread = 0;
+//__thread EventLoop* t_loopInThisThread = 0;
+__declspec(thread) EventLoop* t_loopInThisThread = 0;
 
 const int kPollTimeMs = 10000;
 
-int createEventfd()
+//int createEventfd()
+//{
+//  int evtfd = ::eventfd(0, EFD_NONBLOCK | EFD_CLOEXEC);
+//  if (evtfd < 0)
+//  {
+//    LOG_SYSERR << "Failed in eventfd";
+//    abort();
+//  }
+//  return evtfd;
+//}
+
+std::pair<SOCKET, SOCKET> creatWakeupSock()
 {
-  int evtfd = ::eventfd(0, EFD_NONBLOCK | EFD_CLOEXEC);
-  if (evtfd < 0)
-  {
-    LOG_SYSERR << "Failed in eventfd";
-    abort();
-  }
-  return evtfd;
+	std::pair<SOCKET, SOCKET> fds(INVALID_SOCKET, INVALID_SOCKET);
+    struct sockaddr_in inaddr;
+    struct sockaddr addr;
+	SOCKET lst=::socket(AF_INET, SOCK_STREAM,IPPROTO_TCP);
+
+	if (lst == INVALID_SOCKET)
+	{
+		LOG_SYSERR << "Failed in creatWakeupSock";
+		abort();
+	}
+
+    memset(&inaddr, 0, sizeof(inaddr));
+    memset(&addr, 0, sizeof(addr));
+    inaddr.sin_family = AF_INET;
+    inaddr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+    inaddr.sin_port = 0;
+    int yes=1;
+    setsockopt(lst,SOL_SOCKET,SO_REUSEADDR,(char*)&yes,sizeof(yes));
+    bind(lst,(struct sockaddr *)&inaddr,sizeof(inaddr));
+    listen(lst,1);
+    int len=sizeof(inaddr);
+    getsockname(lst, &addr,&len);
+	fds.first=::socket(AF_INET, SOCK_STREAM,0);
+    connect(fds.first,&addr,len);
+	fds.second=accept(lst,0,0);
+    closesocket(lst);
+
+	if(fds.first == INVALID_SOCKET || fds.second == INVALID_SOCKET)
+	{
+		LOG_SYSERR << "Failed in creatWakeupSock";
+		abort();
+	}
+	return fds;
 }
 
-#pragma GCC diagnostic ignored "-Wold-style-cast"
-class IgnoreSigPipe
-{
- public:
-  IgnoreSigPipe()
-  {
-    ::signal(SIGPIPE, SIG_IGN);
-    // LOG_TRACE << "Ignore SIGPIPE";
-  }
-};
-#pragma GCC diagnostic error "-Wold-style-cast"
-
-IgnoreSigPipe initObj;
+//#pragma GCC diagnostic ignored "-Wold-style-cast"
+//class IgnoreSigPipe
+//{
+// public:
+//  IgnoreSigPipe()
+//  {
+//    ::signal(SIGPIPE, SIG_IGN);
+//    // LOG_TRACE << "Ignore SIGPIPE";
+//  }
+//};
+//#pragma GCC diagnostic error "-Wold-style-cast"
+//
+//IgnoreSigPipe initObj;
 }
+
+typedef int ssize_t;
 
 EventLoop* EventLoop::getEventLoopOfCurrentThread()
 {
@@ -69,8 +101,10 @@ EventLoop::EventLoop()
     threadId_(CurrentThread::tid()),
     poller_(Poller::newDefaultPoller(this)),
     timerQueue_(new TimerQueue(this)),
-    wakeupFd_(createEventfd()),
-    wakeupChannel_(new Channel(this, wakeupFd_)),
+    //wakeupFd_(createEventfd()),
+	//wakeupChannel_(new Channel(this, wakeupFd_)),
+	wakeupSock_(creatWakeupSock()),
+	wakeupChannel_(new Channel(this, wakeupSock_.first)),
     currentActiveChannel_(NULL)
 {
   LOG_DEBUG << "EventLoop created " << this << " in thread " << threadId_;
@@ -95,7 +129,9 @@ EventLoop::~EventLoop()
             << " destructs in thread " << CurrentThread::tid();
   wakeupChannel_->disableAll();
   wakeupChannel_->remove();
-  ::close(wakeupFd_);
+  //::close(wakeupFd_);
+  ::closesocket(wakeupSock_.first);
+  ::closesocket(wakeupSock_.second);
   t_loopInThisThread = NULL;
 }
 
@@ -273,7 +309,8 @@ void EventLoop::abortNotInLoopThread()
 void EventLoop::wakeup()
 {
   uint64_t one = 1;
-  ssize_t n = sockets::write(wakeupFd_, &one, sizeof one);
+  //ssize_t n = sockets::write(wakeupFd_, &one, sizeof one);
+  ssize_t n = sockets::write(wakeupSock_.second, &one, sizeof one);
   if (n != sizeof one)
   {
     LOG_ERROR << "EventLoop::wakeup() writes " << n << " bytes instead of 8";
@@ -283,7 +320,8 @@ void EventLoop::wakeup()
 void EventLoop::handleRead()
 {
   uint64_t one = 1;
-  ssize_t n = sockets::read(wakeupFd_, &one, sizeof one);
+  //ssize_t n = sockets::read(wakeupFd_, &one, sizeof one);
+  ssize_t n = sockets::read(wakeupSock_.first, &one, sizeof one);
   if (n != sizeof one)
   {
     LOG_ERROR << "EventLoop::handleRead() reads " << n << " bytes instead of 8";

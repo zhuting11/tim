@@ -5,6 +5,7 @@
 #include <boost/noncopyable.hpp>
 #include <assert.h>
 //#include <pthread.h>
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
 //#ifdef CHECK_PTHREAD_RETURN_VALUE

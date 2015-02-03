@@ -9,6 +9,7 @@
 
 #include <boost/static_assert.hpp>
 #include <time.h>
+#include <WinSock2.h>
 #include <Windows.h>
 
 using namespace tim;

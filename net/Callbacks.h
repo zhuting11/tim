@@ -1,22 +1,12 @@
-// Copyright 2010, Shuo Chen.  All rights reserved.
-// http://code.google.com/p/muduo/
-//
-// Use of this source code is governed by a BSD-style license
-// that can be found in the License file.
-
-// Author: Shuo Chen (chenshuo at chenshuo dot com)
-//
-// This is a public header file, it must only include public header files.
-
-#ifndef MUDUO_NET_CALLBACKS_H
-#define MUDUO_NET_CALLBACKS_H
+#ifndef TIM_NET_CALLBACKS_H
+#define TIM_NET_CALLBACKS_H
 
 #include <boost/function.hpp>
 #include <boost/shared_ptr.hpp>
 
-#include <muduo/base/Timestamp.h>
+#include <tim/base/Timestamp.h>
 
-namespace muduo
+namespace tim
 {
 
 // Adapted from google-protobuf stubs/common.h
@@ -60,4 +50,4 @@ void defaultMessageCallback(const TcpConnectionPtr& conn,
 }
 }
 
-#endif  // MUDUO_NET_CALLBACKS_H
+#endif  // TIM_NET_CALLBACKS_H

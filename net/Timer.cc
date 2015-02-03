@@ -1,17 +1,10 @@
-// Copyright 2010, Shuo Chen.  All rights reserved.
-// http://code.google.com/p/muduo/
-//
-// Use of this source code is governed by a BSD-style license
-// that can be found in the License file.
+#include <tim/net/Timer.h>
 
-// Author: Shuo Chen (chenshuo at chenshuo dot com)
+using namespace tim;
+using namespace tim::net;
 
-#include <muduo/net/Timer.h>
-
-using namespace muduo;
-using namespace muduo::net;
-
-AtomicInt64 Timer::s_numCreated_;
+//AtomicInt64 Timer::s_numCreated_;
+AtomicInt32 Timer::s_numCreated_;
 
 void Timer::restart(Timestamp now)
 {

@@ -1,19 +1,9 @@
-// Copyright 2010, Shuo Chen.  All rights reserved.
-// http://code.google.com/p/muduo/
-//
-// Use of this source code is governed by a BSD-style license
-// that can be found in the License file.
+#ifndef TIM_NET_TIMERID_H
+#define TIM_NET_TIMERID_H
 
-// Author: Shuo Chen (chenshuo at chenshuo dot com)
-//
-// This is a public header file, it must only include public header files.
+#include <tim/base/copyable.h>
 
-#ifndef MUDUO_NET_TIMERID_H
-#define MUDUO_NET_TIMERID_H
-
-#include <muduo/base/copyable.h>
-
-namespace muduo
+namespace tim
 {
 namespace net
 {
@@ -23,7 +13,7 @@ class Timer;
 ///
 /// An opaque identifier, for canceling Timer.
 ///
-class TimerId : public muduo::copyable
+class TimerId : public tim::copyable
 {
  public:
   TimerId()
@@ -50,4 +40,4 @@ class TimerId : public muduo::copyable
 }
 }
 
-#endif  // MUDUO_NET_TIMERID_H
+#endif  // TIM_NET_TIMERID_H

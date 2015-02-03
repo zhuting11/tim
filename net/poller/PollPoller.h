@@ -1,23 +1,13 @@
-// Copyright 2010, Shuo Chen.  All rights reserved.
-// http://code.google.com/p/muduo/
-//
-// Use of this source code is governed by a BSD-style license
-// that can be found in the License file.
+#ifndef TIM_NET_POLLER_POLLPOLLER_H
+#define TIM_NET_POLLER_POLLPOLLER_H
 
-// Author: Shuo Chen (chenshuo at chenshuo dot com)
-//
-// This is an internal header file, you should not include this.
-
-#ifndef MUDUO_NET_POLLER_POLLPOLLER_H
-#define MUDUO_NET_POLLER_POLLPOLLER_H
-
-#include <muduo/net/Poller.h>
+#include <tim/net/Poller.h>
 
 #include <vector>
 
 struct pollfd;
 
-namespace muduo
+namespace tim
 {
 namespace net
 {
@@ -46,4 +36,4 @@ class PollPoller : public Poller
 
 }
 }
-#endif  // MUDUO_NET_POLLER_POLLPOLLER_H
+#endif  // TIM_NET_POLLER_POLLPOLLER_H

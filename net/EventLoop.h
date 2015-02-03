@@ -1,29 +1,21 @@
-// Copyright 2010, Shuo Chen.  All rights reserved.
-// http://code.google.com/p/muduo/
-//
-// Use of this source code is governed by a BSD-style license
-// that can be found in the License file.
-
-// Author: Shuo Chen (chenshuo at chenshuo dot com)
-//
-// This is a public header file, it must only include public header files.
-
-#ifndef MUDUO_NET_EVENTLOOP_H
-#define MUDUO_NET_EVENTLOOP_H
+#ifndef TIM_NET_EVENTLOOP_H
+#define TIM_NET_EVENTLOOP_H
 
 #include <vector>
+#include <utility>
 
 #include <boost/function.hpp>
 #include <boost/noncopyable.hpp>
 #include <boost/scoped_ptr.hpp>
 
-#include <muduo/base/Mutex.h>
-#include <muduo/base/CurrentThread.h>
-#include <muduo/base/Timestamp.h>
-#include <muduo/net/Callbacks.h>
-#include <muduo/net/TimerId.h>
+#include <tim/base/Mutex.h>
+#include <tim/base/CurrentThread.h>
+#include <tim/base/Timestamp.h>
+#include <tim/net/Callbacks.h>
+#include <tim/net/TimerId.h>
+#include <WinSock2.h>
 
-namespace muduo
+namespace tim
 {
 namespace net
 {
@@ -74,10 +66,10 @@ class EventLoop : boost::noncopyable
   /// Safe to call from other threads.
   void queueInLoop(const Functor& cb);
 
-#ifdef __GXX_EXPERIMENTAL_CXX0X__
-  void runInLoop(Functor&& cb);
-  void queueInLoop(Functor&& cb);
-#endif
+//#ifdef __GXX_EXPERIMENTAL_CXX0X__
+//  void runInLoop(Functor&& cb);
+//  void queueInLoop(Functor&& cb);
+//#endif
 
   // timers
 
@@ -102,11 +94,11 @@ class EventLoop : boost::noncopyable
   ///
   void cancel(TimerId timerId);
 
-#ifdef __GXX_EXPERIMENTAL_CXX0X__
-  TimerId runAt(const Timestamp& time, TimerCallback&& cb);
-  TimerId runAfter(double delay, TimerCallback&& cb);
-  TimerId runEvery(double interval, TimerCallback&& cb);
-#endif
+//#ifdef __GXX_EXPERIMENTAL_CXX0X__
+//  TimerId runAt(const Timestamp& time, TimerCallback&& cb);
+//  TimerId runAfter(double delay, TimerCallback&& cb);
+//  TimerId runEvery(double interval, TimerCallback&& cb);
+//#endif
 
   // internal usage
   void wakeup();
@@ -146,7 +138,11 @@ class EventLoop : boost::noncopyable
   Timestamp pollReturnTime_;
   boost::scoped_ptr<Poller> poller_;
   boost::scoped_ptr<TimerQueue> timerQueue_;
-  int wakeupFd_;
+
+  //int wakeupFd_;
+  //by zhuting(tim)
+  std::pair<SOCKET, SOCKET> wakeupSock_;
+
   // unlike in TimerQueue, which is an internal class,
   // we don't expose Channel to client.
   boost::scoped_ptr<Channel> wakeupChannel_;
@@ -158,4 +154,4 @@ class EventLoop : boost::noncopyable
 
 }
 }
-#endif  // MUDUO_NET_EVENTLOOP_H
+#endif  // TIM_NET_EVENTLOOP_H

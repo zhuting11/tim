@@ -1,27 +1,17 @@
-// Copyright 2010, Shuo Chen.  All rights reserved.
-// http://code.google.com/p/muduo/
-//
-// Use of this source code is governed by a BSD-style license
-// that can be found in the License file.
-
-// Author: Shuo Chen (chenshuo at chenshuo dot com)
-//
-// This is an internal header file, you should not include this.
-
-#ifndef MUDUO_NET_TIMERQUEUE_H
-#define MUDUO_NET_TIMERQUEUE_H
+#ifndef TIM_NET_TIMERQUEUE_H
+#define TIM_NET_TIMERQUEUE_H
 
 #include <set>
 #include <vector>
 
 #include <boost/noncopyable.hpp>
 
-#include <muduo/base/Mutex.h>
-#include <muduo/base/Timestamp.h>
-#include <muduo/net/Callbacks.h>
-#include <muduo/net/Channel.h>
+#include <tim/base/Mutex.h>
+#include <tim/base/Timestamp.h>
+#include <tim/net/Callbacks.h>
+#include <tim/net/Channel.h>
 
-namespace muduo
+namespace tim
 {
 namespace net
 {
@@ -84,8 +74,13 @@ class TimerQueue : boost::noncopyable
   ActiveTimerSet activeTimers_;
   bool callingExpiredTimers_; /* atomic */
   ActiveTimerSet cancelingTimers_;
+
+  //by tim
+  HANDLE hTimer_;
+
+
 };
 
 }
 }
-#endif  // MUDUO_NET_TIMERQUEUE_H
+#endif  // TIM_NET_TIMERQUEUE_H

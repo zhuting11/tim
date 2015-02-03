@@ -1,21 +1,14 @@
-// Copyright 2010, Shuo Chen.  All rights reserved.
-// http://code.google.com/p/muduo/
-//
-// Use of this source code is governed by a BSD-style license
-// that can be found in the License file.
-
-// Author: Shuo Chen (chenshuo at chenshuo dot com)
-
-#include <muduo/base/Logging.h>
-#include <muduo/net/Channel.h>
-#include <muduo/net/EventLoop.h>
+#include <tim/base/Logging.h>
+#include <tim/net/Channel.h>
+#include <tim/net/EventLoop.h>
 
 #include <sstream>
 
-#include <poll.h>
+//#include <poll.h>
+#include <WinSock2.h>
 
-using namespace muduo;
-using namespace muduo::net;
+using namespace tim;
+using namespace tim::net;
 
 const int Channel::kNoneEvent = 0;
 const int Channel::kReadEvent = POLLIN | POLLPRI;
@@ -102,7 +95,8 @@ void Channel::handleEventWithGuard(Timestamp receiveTime)
   {
     if (errorCallback_) errorCallback_();
   }
-  if (revents_ & (POLLIN | POLLPRI | POLLRDHUP))
+  //if (revents_ & (POLLIN | POLLPRI | POLLRDHUP))
+  if (revents_ & (POLLIN | POLLPRI ))
   {
     if (readCallback_) readCallback_(receiveTime);
   }
@@ -125,8 +119,8 @@ string Channel::reventsToString() const
     oss << "OUT ";
   if (revents_ & POLLHUP)
     oss << "HUP ";
-  if (revents_ & POLLRDHUP)
-    oss << "RDHUP ";
+  //if (revents_ & POLLRDHUP)
+  //  oss << "RDHUP ";
   if (revents_ & POLLERR)
     oss << "ERR ";
   if (revents_ & POLLNVAL)

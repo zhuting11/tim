@@ -1,20 +1,12 @@
-// Copyright 2010, Shuo Chen.  All rights reserved.
-// http://code.google.com/p/muduo/
-//
-// Use of this source code is governed by a BSD-style license
-// that can be found in the License file.
+#include <tim/net/EventLoopThreadPool.h>
 
-// Author: Shuo Chen (chenshuo at chenshuo dot com)
-
-#include <muduo/net/EventLoopThreadPool.h>
-
-#include <muduo/net/EventLoop.h>
-#include <muduo/net/EventLoopThread.h>
+#include <tim/net/EventLoop.h>
+#include <tim/net/EventLoopThread.h>
 
 #include <boost/bind.hpp>
 
-using namespace muduo;
-using namespace muduo::net;
+using namespace tim;
+using namespace tim::net;
 
 
 EventLoopThreadPool::EventLoopThreadPool(EventLoop* baseLoop)

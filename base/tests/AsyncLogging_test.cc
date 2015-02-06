@@ -54,6 +54,11 @@ int main(int argc, char* argv[])
 
   char name[256];
   strncpy(name, argv[0], 256);
+
+  //add by tim
+  //char logName[256];
+  //_splitpath_s(name,NULL,0,NULL,0,logName,sizeof(logName),NULL,0);
+
   muduo::AsyncLogging log(::basename(name), kRollSize);
   log.start();
   g_asyncLog = &log;

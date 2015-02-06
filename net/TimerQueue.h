@@ -10,6 +10,8 @@
 #include <tim/base/Timestamp.h>
 #include <tim/net/Callbacks.h>
 #include <tim/net/Channel.h>
+#include <utility>
+#include <WinSock2.h>
 
 namespace tim
 {
@@ -54,6 +56,7 @@ class TimerQueue : boost::noncopyable
   typedef std::pair<Timer*, int64_t> ActiveTimer;
   typedef std::set<ActiveTimer> ActiveTimerSet;
 
+  void resetTimerEx(Timestamp expiration);  //edit by tim
   void addTimerInLoop(Timer* timer);
   void cancelInLoop(TimerId timerId);
   // called when timerfd alarms
@@ -64,8 +67,12 @@ class TimerQueue : boost::noncopyable
 
   bool insert(Timer* timer);
 
+    //by tim
+  HANDLE hTimer_;
+  std::pair<SOCKET, SOCKET> timerFdSock_;
+
   EventLoop* loop_;
-  const int timerfd_;
+  //const int timerfd_;
   Channel timerfdChannel_;
   // Timer list sorted by expiration
   TimerList timers_;
@@ -75,8 +82,7 @@ class TimerQueue : boost::noncopyable
   bool callingExpiredTimers_; /* atomic */
   ActiveTimerSet cancelingTimers_;
 
-  //by tim
-  HANDLE hTimer_;
+
 
 
 };

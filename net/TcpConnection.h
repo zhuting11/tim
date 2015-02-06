@@ -140,4 +140,4 @@ typedef boost::shared_ptr<TcpConnection> TcpConnectionPtr;
 }
 }
 
-#endif  // MUDUO_NET_TCPCONNECTION_H
+#endif  // TIM_NET_TCPCONNECTION_H

@@ -1,13 +1,13 @@
 // TcpClient::stop() called in the same iteration of IO event
 
-#include <muduo/base/Logging.h>
-#include <muduo/net/EventLoop.h>
-#include <muduo/net/TcpClient.h>
+#include <tim/base/Logging.h>
+#include <tim/net/EventLoop.h>
+#include <tim/net/TcpClient.h>
 
 #include <boost/bind.hpp>
 
-using namespace muduo;
-using namespace muduo::net;
+using namespace tim;
+using namespace tim::net;
 
 TcpClient* g_client;
 

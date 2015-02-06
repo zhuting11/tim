@@ -1,25 +1,17 @@
-// Copyright 2010, Shuo Chen.  All rights reserved.
-// http://code.google.com/p/muduo/
-//
-// Use of this source code is governed by a BSD-style license
-// that can be found in the License file.
+#include <tim/net/TcpServer.h>
 
-// Author: Shuo Chen (chenshuo at chenshuo dot com)
-
-#include <muduo/net/TcpServer.h>
-
-#include <muduo/base/Logging.h>
-#include <muduo/net/Acceptor.h>
-#include <muduo/net/EventLoop.h>
-#include <muduo/net/EventLoopThreadPool.h>
-#include <muduo/net/SocketsOps.h>
+#include <tim/base/Logging.h>
+#include <tim/net/Acceptor.h>
+#include <tim/net/EventLoop.h>
+#include <tim/net/EventLoopThreadPool.h>
+#include <tim/net/SocketsOps.h>
 
 #include <boost/bind.hpp>
 
 #include <stdio.h>  // snprintf
 
-using namespace muduo;
-using namespace muduo::net;
+using namespace tim;
+using namespace tim::net;
 
 TcpServer::TcpServer(EventLoop* loop,
                      const InetAddress& listenAddr,
@@ -77,7 +69,7 @@ void TcpServer::newConnection(int sockfd, const InetAddress& peerAddr)
   loop_->assertInLoopThread();
   EventLoop* ioLoop = threadPool_->getNextLoop();
   char buf[32];
-  snprintf(buf, sizeof buf, ":%s#%d", hostport_.c_str(), nextConnId_);
+  _snprintf_s(buf, sizeof buf, ":%s#%d", hostport_.c_str(), nextConnId_);
   ++nextConnId_;
   string connName = name_ + buf;
 

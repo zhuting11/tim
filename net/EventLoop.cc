@@ -14,6 +14,7 @@
 
 using namespace tim;
 using namespace tim::net;
+using namespace tim::net::sockets;
 
 namespace
 {
@@ -21,6 +22,7 @@ namespace
 __declspec(thread) EventLoop* t_loopInThisThread = 0;
 
 const int kPollTimeMs = 10000;
+
 
 //int createEventfd()
 //{
@@ -33,42 +35,42 @@ const int kPollTimeMs = 10000;
 //  return evtfd;
 //}
 
-std::pair<SOCKET, SOCKET> creatWakeupSock()
-{
-	std::pair<SOCKET, SOCKET> fds(INVALID_SOCKET, INVALID_SOCKET);
-    struct sockaddr_in inaddr;
-    struct sockaddr addr;
-	SOCKET lst=::socket(AF_INET, SOCK_STREAM,IPPROTO_TCP);
-
-	if (lst == INVALID_SOCKET)
-	{
-		LOG_SYSERR << "Failed in creatWakeupSock";
-		abort();
-	}
-
-    memset(&inaddr, 0, sizeof(inaddr));
-    memset(&addr, 0, sizeof(addr));
-    inaddr.sin_family = AF_INET;
-    inaddr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
-    inaddr.sin_port = 0;
-    int yes=1;
-    setsockopt(lst,SOL_SOCKET,SO_REUSEADDR,(char*)&yes,sizeof(yes));
-    bind(lst,(struct sockaddr *)&inaddr,sizeof(inaddr));
-    listen(lst,1);
-    int len=sizeof(inaddr);
-    getsockname(lst, &addr,&len);
-	fds.first=::socket(AF_INET, SOCK_STREAM,0);
-    connect(fds.first,&addr,len);
-	fds.second=accept(lst,0,0);
-    closesocket(lst);
-
-	if(fds.first == INVALID_SOCKET || fds.second == INVALID_SOCKET)
-	{
-		LOG_SYSERR << "Failed in creatWakeupSock";
-		abort();
-	}
-	return fds;
-}
+//std::pair<SOCKET, SOCKET> creatWakeupSock()
+//{
+//	std::pair<SOCKET, SOCKET> fds(INVALID_SOCKET, INVALID_SOCKET);
+//    struct sockaddr_in inaddr;
+//    struct sockaddr addr;
+//	SOCKET lst=::socket(AF_INET, SOCK_STREAM,IPPROTO_TCP);
+//
+//	if (lst == INVALID_SOCKET)
+//	{
+//		LOG_SYSERR << "Failed in creatWakeupSock";
+//		abort();
+//	}
+//
+//    memset(&inaddr, 0, sizeof(inaddr));
+//    memset(&addr, 0, sizeof(addr));
+//    inaddr.sin_family = AF_INET;
+//    inaddr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+//    inaddr.sin_port = 0;
+//    int yes=1;
+//    setsockopt(lst,SOL_SOCKET,SO_REUSEADDR,(char*)&yes,sizeof(yes));
+//    bind(lst,(struct sockaddr *)&inaddr,sizeof(inaddr));
+//    listen(lst,1);
+//    int len=sizeof(inaddr);
+//    getsockname(lst, &addr,&len);
+//	fds.first=::socket(AF_INET, SOCK_STREAM,0);
+//    connect(fds.first,&addr,len);
+//	fds.second=accept(lst,0,0);
+//    closesocket(lst);
+//
+//	if(fds.first == INVALID_SOCKET || fds.second == INVALID_SOCKET)
+//	{
+//		LOG_SYSERR << "Failed in creatWakeupSock";
+//		abort();
+//	}
+//	return fds;
+//}
 
 //#pragma GCC diagnostic ignored "-Wold-style-cast"
 //class IgnoreSigPipe
@@ -85,7 +87,7 @@ std::pair<SOCKET, SOCKET> creatWakeupSock()
 //IgnoreSigPipe initObj;
 }
 
-typedef int ssize_t;
+//typedef int ssize_t;
 
 EventLoop* EventLoop::getEventLoopOfCurrentThread()
 {
@@ -103,7 +105,7 @@ EventLoop::EventLoop()
     timerQueue_(new TimerQueue(this)),
     //wakeupFd_(createEventfd()),
 	//wakeupChannel_(new Channel(this, wakeupFd_)),
-	wakeupSock_(creatWakeupSock()),
+	wakeupSock_(creatSockPair()),
 	wakeupChannel_(new Channel(this, wakeupSock_.first)),
     currentActiveChannel_(NULL)
 {

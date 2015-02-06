@@ -1,25 +1,15 @@
-// Copyright 2010, Shuo Chen.  All rights reserved.
-// http://code.google.com/p/muduo/
-//
-// Use of this source code is governed by a BSD-style license
-// that can be found in the License file.
+#ifndef TIM_NET_TCPSERVER_H
+#define TIM_NET_TCPSERVER_H
 
-// Author: Shuo Chen (chenshuo at chenshuo dot com)
-//
-// This is a public header file, it must only include public header files.
-
-#ifndef MUDUO_NET_TCPSERVER_H
-#define MUDUO_NET_TCPSERVER_H
-
-#include <muduo/base/Atomic.h>
-#include <muduo/base/Types.h>
-#include <muduo/net/TcpConnection.h>
+#include <tim/base/Atomic.h>
+#include <tim/base/Types.h>
+#include <tim/net/TcpConnection.h>
 
 #include <map>
 #include <boost/noncopyable.hpp>
 #include <boost/scoped_ptr.hpp>
 
-namespace muduo
+namespace tim
 {
 namespace net
 {
@@ -118,4 +108,4 @@ class TcpServer : boost::noncopyable
 }
 }
 
-#endif  // MUDUO_NET_TCPSERVER_H
+#endif  // TIM_NET_TCPSERVER_H

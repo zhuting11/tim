@@ -1,26 +1,16 @@
-// Copyright 2010, Shuo Chen.  All rights reserved.
-// http://code.google.com/p/muduo/
-//
-// Use of this source code is governed by a BSD-style license
-// that can be found in the License file.
+#ifndef TIM_NET_HTTP_HTTPCONTEXT_H
+#define TIM_NET_HTTP_HTTPCONTEXT_H
 
-// Author: Shuo Chen (chenshuo at chenshuo dot com)
-//
-// This is an internal header file, you should not include this.
+#include <tim/base/copyable.h>
 
-#ifndef MUDUO_NET_HTTP_HTTPCONTEXT_H
-#define MUDUO_NET_HTTP_HTTPCONTEXT_H
+#include <tim/net/http/HttpRequest.h>
 
-#include <muduo/base/copyable.h>
-
-#include <muduo/net/http/HttpRequest.h>
-
-namespace muduo
+namespace tim
 {
 namespace net
 {
 
-class HttpContext : public muduo::copyable
+class HttpContext : public tim::copyable
 {
  public:
   enum HttpRequestParseState
@@ -77,4 +67,4 @@ class HttpContext : public muduo::copyable
 }
 }
 
-#endif  // MUDUO_NET_HTTP_HTTPCONTEXT_H
+#endif  // TIM_NET_HTTP_HTTPCONTEXT_H

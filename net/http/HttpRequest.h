@@ -1,30 +1,20 @@
-// Copyright 2010, Shuo Chen.  All rights reserved.
-// http://code.google.com/p/muduo/
-//
-// Use of this source code is governed by a BSD-style license
-// that can be found in the License file.
+#ifndef TIM_NET_HTTP_HTTPREQUEST_H
+#define TIM_NET_HTTP_HTTPREQUEST_H
 
-// Author: Shuo Chen (chenshuo at chenshuo dot com)
-//
-// This is a public header file, it must only include public header files.
-
-#ifndef MUDUO_NET_HTTP_HTTPREQUEST_H
-#define MUDUO_NET_HTTP_HTTPREQUEST_H
-
-#include <muduo/base/copyable.h>
-#include <muduo/base/Timestamp.h>
-#include <muduo/base/Types.h>
+#include <tim/base/copyable.h>
+#include <tim/base/Timestamp.h>
+#include <tim/base/Types.h>
 
 #include <map>
 #include <assert.h>
 #include <stdio.h>
 
-namespace muduo
+namespace tim
 {
 namespace net
 {
 
-class HttpRequest : public muduo::copyable
+class HttpRequest : public tim::copyable
 {
  public:
   enum Method
@@ -183,4 +173,4 @@ class HttpRequest : public muduo::copyable
 }
 }
 
-#endif  // MUDUO_NET_HTTP_HTTPREQUEST_H
+#endif  // TIM_NET_HTTP_HTTPREQUEST_H

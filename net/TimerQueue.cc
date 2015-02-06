@@ -8,6 +8,7 @@
 #include <tim/base/Condition.h>
 
 #include <boost/bind.hpp>
+#include <tim/net/socketsops.h>
 
 //#include <sys/timerfd.h>
 
@@ -17,18 +18,18 @@ namespace net
 {
 namespace detail
 {
-	typedef int ssize_t;
+	//typedef int ssize_t;
 
-int createTimerfd()
-{
-  int timerfd = ::timerfd_create(CLOCK_MONOTONIC,
-                                 TFD_NONBLOCK | TFD_CLOEXEC);
-  if (timerfd < 0)
-  {
-    LOG_SYSFATAL << "Failed in timerfd_create";
-  }
-  return timerfd;
-}
+//int createTimerfd()
+//{
+//  int timerfd = ::timerfd_create(CLOCK_MONOTONIC,
+//                                 TFD_NONBLOCK | TFD_CLOEXEC);
+//  if (timerfd < 0)
+//  {
+//    LOG_SYSFATAL << "Failed in timerfd_create";
+//  }
+//  return timerfd;
+//}
 
 struct timespec howMuchTimeFromNow(Timestamp when)
 {
@@ -46,31 +47,31 @@ struct timespec howMuchTimeFromNow(Timestamp when)
   return ts;
 }
 
-void readTimerfd(int timerfd, Timestamp now)
-{
-  uint64_t howmany;
-  ssize_t n = ::read(timerfd, &howmany, sizeof howmany);
-  LOG_TRACE << "TimerQueue::handleRead() " << howmany << " at " << now.toString();
-  if (n != sizeof howmany)
-  {
-    LOG_ERROR << "TimerQueue::handleRead() reads " << n << " bytes instead of 8";
-  }
-}
+//void readTimerfd(int timerfd, Timestamp now)
+//{
+//  uint64_t howmany;
+//  ssize_t n = ::read(timerfd, &howmany, sizeof howmany);
+//  LOG_TRACE << "TimerQueue::handleRead() " << howmany << " at " << now.toString();
+//  if (n != sizeof howmany)
+//  {
+//    LOG_ERROR << "TimerQueue::handleRead() reads " << n << " bytes instead of 8";
+//  }
+//}
 
-void resetTimerfd(int timerfd, Timestamp expiration)
-{
-  // wake up loop by timerfd_settime()
-  struct itimerspec newValue;
-  struct itimerspec oldValue;
-  bzero(&newValue, sizeof newValue);
-  bzero(&oldValue, sizeof oldValue);
-  newValue.it_value = howMuchTimeFromNow(expiration);
-  int ret = ::timerfd_settime(timerfd, 0, &newValue, &oldValue);
-  if (ret)
-  {
-    LOG_SYSERR << "timerfd_settime()";
-  }
-}
+//void resetTimerfd(int timerfd, Timestamp expiration)
+//{
+//  // wake up loop by timerfd_settime()
+//  struct itimerspec newValue;
+//  struct itimerspec oldValue;
+//  bzero(&newValue, sizeof newValue);
+//  bzero(&oldValue, sizeof oldValue);
+//  newValue.it_value = howMuchTimeFromNow(expiration);
+//  int ret = ::timerfd_settime(timerfd, 0, &newValue, &oldValue);
+//  if (ret)
+//  {
+//    LOG_SYSERR << "timerfd_settime()";
+//  }
+//}
 
 }
 }
@@ -79,14 +80,18 @@ void resetTimerfd(int timerfd, Timestamp expiration)
 using namespace tim;
 using namespace tim::net;
 using namespace tim::net::detail;
+using namespace tim::net::sockets;
 
 TimerQueue::TimerQueue(EventLoop* loop)
   : loop_(loop),
-    timerfd_(createTimerfd()),
-    timerfdChannel_(loop, timerfd_),
+  	hTimer_(NULL),	// by tim
+	timerFdSock_(creatSockPair()),  //add by tim
+    //timerfd_(createTimerfd()),
+    //timerfdChannel_(loop, timerfd_),
+	timerfdChannel_(loop, timerFdSock_.first),
     timers_(),
-    callingExpiredTimers_(false),
-	hTimer_(CreateWaitableTimer(NULL, TRUE, NULL)) // by tim
+    callingExpiredTimers_(false)
+
 {
   timerfdChannel_.setReadCallback(
       boost::bind(&TimerQueue::handleRead, this));
@@ -98,7 +103,13 @@ TimerQueue::~TimerQueue()
 {
   timerfdChannel_.disableAll();
   timerfdChannel_.remove();
-  ::close(timerfd_);
+  //::close(timerfd_);
+  closesocket(timerFdSock_.first);
+  closesocket(timerFdSock_.second);
+
+  timerFdSock_.first = NULL;
+  timerFdSock_.second = NULL;
+
   // do not remove channel, since we're in EventLoop::dtor();
   for (TimerList::iterator it = timers_.begin();
       it != timers_.end(); ++it)
@@ -142,7 +153,8 @@ void TimerQueue::addTimerInLoop(Timer* timer)
 
   if (earliestChanged)
   {
-    resetTimerfd(timerfd_, timer->expiration());
+    //resetTimerfd(timerfd_, timer->expiration());
+	resetTimerEx(timer->expiration());
   }
 }
 
@@ -170,7 +182,15 @@ void TimerQueue::handleRead()
 {
   loop_->assertInLoopThread();
   Timestamp now(Timestamp::now());
-  readTimerfd(timerfd_, now);
+
+  ////edit by tim
+  //readTimerfd(timerfd_, now);
+  uint64_t one = 1;
+  ssize_t n = sockets::read(timerFdSock_.first, &one, sizeof one);
+  if (n != sizeof one)
+  {
+    LOG_ERROR << "TimerQueue::handleRead() reads " << n << " bytes instead of 8";
+  }
 
   std::vector<Entry> expired = getExpired(now);
 
@@ -237,7 +257,9 @@ void TimerQueue::reset(const std::vector<Entry>& expired, Timestamp now)
 
   if (nextExpire.valid())
   {
-    resetTimerfd(timerfd_, nextExpire);
+	//edit by tim
+    //resetTimerfd(timerfd_, nextExpire);
+	resetTimerEx(nextExpire);
   }
 }
 
@@ -267,37 +289,50 @@ bool TimerQueue::insert(Timer* timer)
   return earliestChanged;
 }
 
-//by zhuting(tim)
-void resetTimerInThread()
+VOID CALLBACK TimerRoutine(PVOID lpParam, BOOLEAN TimerOrWaitFired)
 {
-	HANDLE hTimer = NULL;
-    LARGE_INTEGER liDueTime;
+	if(lpParam == NULL)
+	{
+		LOG_WARN << "TimerRoutine get NULL lpParam";
+		return;
+	}
 
-    liDueTime.QuadPart = -100000000LL;
+	SOCKET sk = *(SOCKET*)(lpParam);
 
-    // Create an unnamed waitable timer.
-    hTimer = CreateWaitableTimer(NULL, TRUE, NULL);
-    if (NULL == hTimer)
+	if(sk == INVALID_SOCKET)
+	{
+		LOG_WARN << "TimerRoutine get INVALID_SOCKET";
+		return;
+	}
+
+	uint64_t one = 1;
+	ssize_t n = sockets::write(sk, &one, sizeof one);
+	if (n != sizeof one)
+	{
+		LOG_WARN << "TimerRoutine writes " << n << " bytes instead of 8";
+	}
+}
+
+//by zhuting(tim)
+void TimerQueue::resetTimerEx(Timestamp expiration)
+{
+	int64_t microseconds = expiration.microSecondsSinceEpoch()
+                         - Timestamp::now().microSecondsSinceEpoch();
+
+	DWORD dueTim = microseconds/1000;
+
+	if(hTimer_)
+	{
+		if(!DeleteTimerQueueTimer(NULL, hTimer_, NULL))
+			LOG_SYSERR << "DeleteTimerQueueTimer failed! GetLastError = " << GetLastError();
+		hTimer_ = NULL;
+	}
+
+    // Set a timer to call the timer routine in 10 seconds.
+    if (!CreateTimerQueueTimer( &hTimer_, NULL, 
+		(WAITORTIMERCALLBACK)TimerRoutine, &timerFdSock_.second , dueTim, 0, 0))
     {
-        printf("CreateWaitableTimer failed (%d)\n", GetLastError());
-        return 1;
+		LOG_SYSERR << "CreateTimerQueueTimer failed! GetLastError = " << GetLastError();
     }
-
-    printf("Waiting for 10 seconds...\n");
-
-    // Set a timer to wait for 10 seconds.
-    if (!SetWaitableTimer(hTimer, &liDueTime, 0, NULL, NULL, 0))
-    {
-        printf("SetWaitableTimer failed (%d)\n", GetLastError());
-        return 2;
-    }
-
-    // Wait for the timer.
-
-    if (WaitForSingleObject(hTimer, INFINITE) != WAIT_OBJECT_0)
-        printf("WaitForSingleObject failed (%d)\n", GetLastError());
-    else printf("Timer was signaled.\n");
-
-    return 0;
 }
 

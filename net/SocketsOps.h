@@ -3,6 +3,7 @@
 
 //#include <arpa/inet.h>
 #include <WinSock2.h>
+#include <utility>
 
 namespace tim
 {
@@ -40,6 +41,7 @@ int getSocketError(int sockfd);
 struct sockaddr_in getLocalAddr(int sockfd);
 struct sockaddr_in getPeerAddr(int sockfd);
 bool isSelfConnect(int sockfd);
+std::pair<SOCKET, SOCKET> creatSockPair();
 
 }
 }

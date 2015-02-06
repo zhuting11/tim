@@ -1,23 +1,13 @@
-// Copyright 2010, Shuo Chen.  All rights reserved.
-// http://code.google.com/p/muduo/
-//
-// Use of this source code is governed by a BSD-style license
-// that can be found in the License file.
-
-// Author: Shuo Chen (chenshuo at chenshuo dot com)
-//
-// This is an internal header file, you should not include this.
-
-#ifndef MUDUO_NET_ACCEPTOR_H
-#define MUDUO_NET_ACCEPTOR_H
+#ifndef TIM_NET_ACCEPTOR_H
+#define TIM_NET_ACCEPTOR_H
 
 #include <boost/function.hpp>
 #include <boost/noncopyable.hpp>
 
-#include <muduo/net/Channel.h>
-#include <muduo/net/Socket.h>
+#include <tim/net/Channel.h>
+#include <tim/net/Socket.h>
 
-namespace muduo
+namespace tim
 {
 namespace net
 {
@@ -51,10 +41,10 @@ class Acceptor : boost::noncopyable
   Channel acceptChannel_;
   NewConnectionCallback newConnectionCallback_;
   bool listenning_;
-  int idleFd_;
+  //int idleFd_;
 };
 
 }
 }
 
-#endif  // MUDUO_NET_ACCEPTOR_H
+#endif  // TIM_NET_ACCEPTOR_H

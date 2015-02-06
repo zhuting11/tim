@@ -1,22 +1,12 @@
-// Copyright 2010, Shuo Chen.  All rights reserved.
-// http://code.google.com/p/muduo/
-//
-// Use of this source code is governed by a BSD-style license
-// that can be found in the License file.
-
-// Author: Shuo Chen (chenshuo at chenshuo dot com)
-//
-// This is an internal header file, you should not include this.
-
-#ifndef MUDUO_NET_EVENTLOOPTHREADPOOL_H
-#define MUDUO_NET_EVENTLOOPTHREADPOOL_H
+#ifndef TIM_NET_EVENTLOOPTHREADPOOL_H
+#define TIM_NET_EVENTLOOPTHREADPOOL_H
 
 #include <vector>
 #include <boost/function.hpp>
 #include <boost/noncopyable.hpp>
 #include <boost/ptr_container/ptr_vector.hpp>
 
-namespace muduo
+namespace tim
 {
 
 namespace net
@@ -52,4 +42,4 @@ class EventLoopThreadPool : boost::noncopyable
 }
 }
 
-#endif  // MUDUO_NET_EVENTLOOPTHREADPOOL_H
+#endif  // TIM_NET_EVENTLOOPTHREADPOOL_H

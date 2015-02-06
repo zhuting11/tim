@@ -1,28 +1,20 @@
-// Copyright 2010, Shuo Chen.  All rights reserved.
-// http://code.google.com/p/muduo/
-//
-// Use of this source code is governed by a BSD-style license
-// that can be found in the License file.
+#include <tim/net/TcpConnection.h>
 
-// Author: Shuo Chen (chenshuo at chenshuo dot com)
-
-#include <muduo/net/TcpConnection.h>
-
-#include <muduo/base/Logging.h>
-#include <muduo/base/WeakCallback.h>
-#include <muduo/net/Channel.h>
-#include <muduo/net/EventLoop.h>
-#include <muduo/net/Socket.h>
-#include <muduo/net/SocketsOps.h>
+#include <tim/base/Logging.h>
+#include <tim/base/WeakCallback.h>
+#include <tim/net/Channel.h>
+#include <tim/net/EventLoop.h>
+#include <tim/net/Socket.h>
+#include <tim/net/SocketsOps.h>
 
 #include <boost/bind.hpp>
 
 #include <errno.h>
 
-using namespace muduo;
-using namespace muduo::net;
+using namespace tim;
+using namespace tim::net;
 
-void muduo::net::defaultConnectionCallback(const TcpConnectionPtr& conn)
+void tim::net::defaultConnectionCallback(const TcpConnectionPtr& conn)
 {
   LOG_TRACE << conn->localAddress().toIpPort() << " -> "
             << conn->peerAddress().toIpPort() << " is "
@@ -30,7 +22,7 @@ void muduo::net::defaultConnectionCallback(const TcpConnectionPtr& conn)
   // do not call conn->forceClose(), because some users want to register message callback only.
 }
 
-void muduo::net::defaultMessageCallback(const TcpConnectionPtr&,
+void tim::net::defaultMessageCallback(const TcpConnectionPtr&,
                                         Buffer* buf,
                                         Timestamp)
 {
@@ -74,14 +66,15 @@ TcpConnection::~TcpConnection()
 
 bool TcpConnection::getTcpInfo(struct tcp_info* tcpi) const
 {
-  return socket_->getTcpInfo(tcpi);
+  //return socket_->getTcpInfo(tcpi);
+  return true;
 }
 
 string TcpConnection::getTcpInfoString() const
 {
   char buf[1024];
   buf[0] = '\0';
-  socket_->getTcpInfoString(buf, sizeof buf);
+  //socket_->getTcpInfoString(buf, sizeof buf);
   return buf;
 }
 

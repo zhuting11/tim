@@ -1,17 +1,9 @@
-// Copyright 2010, Shuo Chen.  All rights reserved.
-// http://code.google.com/p/muduo/
-//
-// Use of this source code is governed by a BSD-style license
-// that can be found in the License file.
+#include <tim/net/Acceptor.h>
 
-// Author: Shuo Chen (chenshuo at chenshuo dot com)
-
-#include <muduo/net/Acceptor.h>
-
-#include <muduo/base/Logging.h>
-#include <muduo/net/EventLoop.h>
-#include <muduo/net/InetAddress.h>
-#include <muduo/net/SocketsOps.h>
+#include <tim/base/Logging.h>
+#include <tim/net/EventLoop.h>
+#include <tim/net/InetAddress.h>
+#include <tim/net/SocketsOps.h>
 
 #include <boost/bind.hpp>
 
@@ -20,17 +12,17 @@
 //#include <sys/types.h>
 //#include <sys/stat.h>
 
-using namespace muduo;
-using namespace muduo::net;
+using namespace tim;
+using namespace tim::net;
 
 Acceptor::Acceptor(EventLoop* loop, const InetAddress& listenAddr, bool reuseport)
   : loop_(loop),
     acceptSocket_(sockets::createNonblockingOrDie()),
     acceptChannel_(loop, acceptSocket_.fd()),
-    listenning_(false),
-    idleFd_(::open("/dev/null", O_RDONLY | O_CLOEXEC))
+    listenning_(false)
+    //idleFd_(::open("/dev/null", O_RDONLY | O_CLOEXEC))
 {
-  assert(idleFd_ >= 0);
+  //assert(idleFd_ >= 0);
   acceptSocket_.setReuseAddr(true);
   acceptSocket_.setReusePort(reuseport);
   acceptSocket_.bindAddress(listenAddr);
@@ -42,7 +34,7 @@ Acceptor::~Acceptor()
 {
   acceptChannel_.disableAll();
   acceptChannel_.remove();
-  ::close(idleFd_);
+  //::close(idleFd_);
 }
 
 void Acceptor::listen()
@@ -78,13 +70,13 @@ void Acceptor::handleRead()
     // Read the section named "The special problem of
     // accept()ing when you can't" in libev's doc.
     // By Marc Lehmann, author of livev.
-    if (errno == EMFILE)
-    {
-      ::close(idleFd_);
-      idleFd_ = ::accept(acceptSocket_.fd(), NULL, NULL);
-      ::close(idleFd_);
-      idleFd_ = ::open("/dev/null", O_RDONLY | O_CLOEXEC);
-    }
+    //if (errno == EMFILE)
+    //{
+    //  ::close(idleFd_);
+    //  idleFd_ = ::accept(acceptSocket_.fd(), NULL, NULL);
+    //  ::close(idleFd_);
+    //  idleFd_ = ::open("/dev/null", O_RDONLY | O_CLOEXEC);
+    //}
   }
 }
 

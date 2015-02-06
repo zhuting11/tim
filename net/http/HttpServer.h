@@ -1,20 +1,10 @@
-// Copyright 2010, Shuo Chen.  All rights reserved.
-// http://code.google.com/p/muduo/
-//
-// Use of this source code is governed by a BSD-style license
-// that can be found in the License file.
+#ifndef TIM_NET_HTTP_HTTPSERVER_H
+#define TIM_NET_HTTP_HTTPSERVER_H
 
-// Author: Shuo Chen (chenshuo at chenshuo dot com)
-//
-// This is a public header file, it must only include public header files.
-
-#ifndef MUDUO_NET_HTTP_HTTPSERVER_H
-#define MUDUO_NET_HTTP_HTTPSERVER_H
-
-#include <muduo/net/TcpServer.h>
+#include <tim/net/TcpServer.h>
 #include <boost/noncopyable.hpp>
 
-namespace muduo
+namespace tim
 {
 namespace net
 {
@@ -68,4 +58,4 @@ class HttpServer : boost::noncopyable
 }
 }
 
-#endif  // MUDUO_NET_HTTP_HTTPSERVER_H
+#endif  // TIM_NET_HTTP_HTTPSERVER_H

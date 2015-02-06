@@ -1,19 +1,11 @@
-// Copyright 2010, Shuo Chen.  All rights reserved.
-// http://code.google.com/p/muduo/
-//
-// Use of this source code is governed by a BSD-style license
-// that can be found in the License file.
-//
-// Author: Shuo Chen (chenshuo at chenshuo dot com)
-
-#ifndef MUDUO_BASE_WEAKCALLBACK_H
-#define MUDUO_BASE_WEAKCALLBACK_H
+#ifndef TIM_BASE_WEAKCALLBACK_H
+#define TIM_BASE_WEAKCALLBACK_H
 
 #include <functional>
 #include <boost/function.hpp>
 #include <boost/shared_ptr.hpp>
 
-namespace muduo
+namespace tim
 {
 
 // A barely usable WeakCallback

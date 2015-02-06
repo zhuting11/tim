@@ -11,8 +11,10 @@ using namespace tim;
 using namespace tim::net;
 
 const int Channel::kNoneEvent = 0;
-const int Channel::kReadEvent = POLLIN | POLLPRI;
-const int Channel::kWriteEvent = POLLOUT;
+//const int Channel::kReadEvent = POLLIN | POLLPRI;
+//const int Channel::kWriteEvent = POLLOUT;
+const int Channel::kReadEvent = POLLRDNORM;
+const int Channel::kWriteEvent = POLLWRNORM;
 
 Channel::Channel(EventLoop* loop, int fd__)
   : loop_(loop),

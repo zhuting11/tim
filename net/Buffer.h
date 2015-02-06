@@ -1,8 +1,6 @@
-// Copyright 2010, Shuo Chen.  All rights reserved.
-// http://code.google.com/p/muduo/
-//
 #ifndef TIM_NET_BUFFER_H
 #define TIM_NET_BUFFER_H
+
 
 #include <tim/base/copyable.h>
 #include <tim/base/StringPiece.h>

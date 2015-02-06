@@ -5,7 +5,7 @@
 
 #include <vector>
 
-struct pollfd;
+//struct pollfd;
 
 namespace tim
 {
@@ -30,7 +30,8 @@ class PollPoller : public Poller
   void fillActiveChannels(int numEvents,
                           ChannelList* activeChannels) const;
 
-  typedef std::vector<struct pollfd> PollFdList;
+  //typedef std::vector<struct pollfd> PollFdList;
+  typedef std::vector<WSAPOLLFD> PollFdList;
   PollFdList pollfds_;
 };
 

@@ -1,19 +1,19 @@
-#include <muduo/net/TcpServer.h>
+#include <tim/net/TcpServer.h>
 
-#include <muduo/base/Logging.h>
-#include <muduo/base/Thread.h>
-#include <muduo/net/EventLoop.h>
-#include <muduo/net/InetAddress.h>
+#include <tim/base/Logging.h>
+#include <tim/base/Thread.h>
+#include <tim/net/EventLoop.h>
+#include <tim/net/InetAddress.h>
 
 #include <boost/bind.hpp>
 
 #include <utility>
 
 #include <stdio.h>
-#include <unistd.h>
+//#include <unistd.h>
 
-using namespace muduo;
-using namespace muduo::net;
+using namespace tim;
+using namespace tim::net;
 
 int numThreads = 0;
 
@@ -70,7 +70,7 @@ class EchoServer
 
 int main(int argc, char* argv[])
 {
-  LOG_INFO << "pid = " << getpid() << ", tid = " << CurrentThread::tid();
+  LOG_INFO << "pid = " << GetCurrentProcessId() << ", tid = " << CurrentThread::tid();
   LOG_INFO << "sizeof TcpConnection = " << sizeof(TcpConnection);
   if (argc > 1)
   {

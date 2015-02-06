@@ -1,14 +1,14 @@
-#include <muduo/net/http/HttpServer.h>
-#include <muduo/net/http/HttpRequest.h>
-#include <muduo/net/http/HttpResponse.h>
-#include <muduo/net/EventLoop.h>
-#include <muduo/base/Logging.h>
+#include <tim/net/http/HttpServer.h>
+#include <tim/net/http/HttpRequest.h>
+#include <tim/net/http/HttpResponse.h>
+#include <tim/net/EventLoop.h>
+#include <tim/base/Logging.h>
 
 #include <iostream>
 #include <map>
 
-using namespace muduo;
-using namespace muduo::net;
+using namespace tim;
+using namespace tim::net;
 
 extern char favicon[555];
 bool benchmark = false;

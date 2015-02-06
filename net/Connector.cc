@@ -1,27 +1,18 @@
-// Copyright 2010, Shuo Chen.  All rights reserved.
-// http://code.google.com/p/muduo/
-//
-// Use of this source code is governed by a BSD-style license
-// that can be found in the License file.
+#include <tim/net/Connector.h>
 
-// Author: Shuo Chen (chenshuo at chenshuo dot com)
-//
-
-#include <muduo/net/Connector.h>
-
-#include <muduo/base/Logging.h>
-#include <muduo/net/Channel.h>
-#include <muduo/net/EventLoop.h>
-#include <muduo/net/SocketsOps.h>
+#include <tim/base/Logging.h>
+#include <tim/net/Channel.h>
+#include <tim/net/EventLoop.h>
+#include <tim/net/SocketsOps.h>
 
 #include <boost/bind.hpp>
 
 #include <errno.h>
 
-using namespace muduo;
-using namespace muduo::net;
+using namespace tim;
+using namespace tim::net;
 
-const int Connector::kMaxRetryDelayMs;
+//const int Connector::kMaxRetryDelayMs;
 
 Connector::Connector(EventLoop* loop, const InetAddress& serverAddr)
   : loop_(loop),
@@ -218,7 +209,7 @@ void Connector::retry(int sockfd)
              << " in " << retryDelayMs_ << " milliseconds. ";
     loop_->runAfter(retryDelayMs_/1000.0,
                     boost::bind(&Connector::startInLoop, shared_from_this()));
-    retryDelayMs_ = std::min(retryDelayMs_ * 2, kMaxRetryDelayMs);
+    retryDelayMs_ = min(retryDelayMs_ * 2, kMaxRetryDelayMs);
   }
   else
   {

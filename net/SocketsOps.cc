@@ -20,6 +20,26 @@ using namespace tim::net;
 namespace
 {
 
+bool g_hasInitWSA = false;
+
+void initWSA()
+{
+	if(!g_hasInitWSA)
+	{
+		WSADATA wsaData;
+		int iResult;
+		iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
+		if (iResult != NO_ERROR) 
+		{
+			LOG_FATAL << "WSAStartup failed: %d\n" << iResult;
+			abort();
+		}
+
+		g_hasInitWSA = true;
+	}
+
+}
+
 typedef struct sockaddr SA;
 
 const SA* sockaddr_cast(const struct sockaddr_in* addr)
@@ -146,17 +166,19 @@ using namespace tim::net::sockets;
 
 ssize_t sockets::read(int sockfd, void *buf, size_t count)
 {
-  return ::read(sockfd, buf, count);
+  //return ::read(sockfd, buf, count);
+  return ::recv(sockfd, (char*)buf, count, 0);
 }
 
-ssize_t sockets::readv(int sockfd, const struct iovec *iov, int iovcnt)
-{
-  return ::readv(sockfd, iov, iovcnt);
-}
+//ssize_t sockets::readv(int sockfd, const struct iovec *iov, int iovcnt)
+//{
+//  return ::readv(sockfd, iov, iovcnt);
+//}
 
 ssize_t sockets::write(int sockfd, const void *buf, size_t count)
 {
-  return ::write(sockfd, buf, count);
+  //return ::write(sockfd, buf, count);
+	return ::send(sockfd, (char*)buf, count, 0);
 }
 
 void sockets::close(int sockfd)
@@ -252,5 +274,45 @@ bool sockets::isSelfConnect(int sockfd)
   struct sockaddr_in peeraddr = getPeerAddr(sockfd);
   return localaddr.sin_port == peeraddr.sin_port
       && localaddr.sin_addr.s_addr == peeraddr.sin_addr.s_addr;
+}
+
+//add by tim
+std::pair<SOCKET, SOCKET> sockets::creatSockPair()
+{
+	initWSA();
+
+	std::pair<SOCKET, SOCKET> fds(INVALID_SOCKET, INVALID_SOCKET);
+    struct sockaddr_in inaddr;
+    struct sockaddr addr;
+	SOCKET lst=::socket(AF_INET, SOCK_STREAM,IPPROTO_TCP);
+
+	if (lst == INVALID_SOCKET)
+	{
+		LOG_SYSERR << "Failed in creatWakeupSock";
+		abort();
+	}
+
+    memset(&inaddr, 0, sizeof(inaddr));
+    memset(&addr, 0, sizeof(addr));
+    inaddr.sin_family = AF_INET;
+    inaddr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+    inaddr.sin_port = 0;
+    int yes=1;
+    setsockopt(lst,SOL_SOCKET,SO_REUSEADDR,(char*)&yes,sizeof(yes));
+    bind(lst,(struct sockaddr *)&inaddr,sizeof(inaddr));
+    listen(lst,1);
+    int len=sizeof(inaddr);
+    getsockname(lst, &addr,&len);
+	fds.first=::socket(AF_INET, SOCK_STREAM,0);
+    connect(fds.first,&addr,len);
+	fds.second=::accept(lst,0,0);
+    closesocket(lst);
+
+	if(fds.first == INVALID_SOCKET || fds.second == INVALID_SOCKET)
+	{
+		LOG_SYSERR << "Failed in creatWakeupSock";
+		abort();
+	}
+	return fds;
 }
 

@@ -1,25 +1,16 @@
-// Copyright 2010, Shuo Chen.  All rights reserved.
-// http://code.google.com/p/muduo/
-//
-// Use of this source code is governed by a BSD-style license
-// that can be found in the License file.
+#include <tim/net/http/HttpServer.h>
 
-// Author: Shuo Chen (chenshuo at chenshuo dot com)
-//
-
-#include <muduo/net/http/HttpServer.h>
-
-#include <muduo/base/Logging.h>
-#include <muduo/net/http/HttpContext.h>
-#include <muduo/net/http/HttpRequest.h>
-#include <muduo/net/http/HttpResponse.h>
+#include <tim/base/Logging.h>
+#include <tim/net/http/HttpContext.h>
+#include <tim/net/http/HttpRequest.h>
+#include <tim/net/http/HttpResponse.h>
 
 #include <boost/bind.hpp>
 
-using namespace muduo;
-using namespace muduo::net;
+using namespace tim;
+using namespace tim::net;
 
-namespace muduo
+namespace tim
 {
 namespace net
 {

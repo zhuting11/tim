@@ -1,25 +1,16 @@
-// Copyright 2010, Shuo Chen.  All rights reserved.
-// http://code.google.com/p/muduo/
-//
-// Use of this source code is governed by a BSD-style license
-// that can be found in the License file.
+#include <tim/net/TcpClient.h>
 
-// Author: Shuo Chen (chenshuo at chenshuo dot com)
-//
-
-#include <muduo/net/TcpClient.h>
-
-#include <muduo/base/Logging.h>
-#include <muduo/net/Connector.h>
-#include <muduo/net/EventLoop.h>
-#include <muduo/net/SocketsOps.h>
+#include <tim/base/Logging.h>
+#include <tim/net/Connector.h>
+#include <tim/net/EventLoop.h>
+#include <tim/net/SocketsOps.h>
 
 #include <boost/bind.hpp>
 
 #include <stdio.h>  // snprintf
 
-using namespace muduo;
-using namespace muduo::net;
+using namespace tim;
+using namespace tim::net;
 
 // TcpClient::TcpClient(EventLoop* loop)
 //   : loop_(loop)
@@ -32,7 +23,7 @@ using namespace muduo::net;
 // {
 // }
 
-namespace muduo
+namespace tim
 {
 namespace net
 {
@@ -136,7 +127,7 @@ void TcpClient::newConnection(int sockfd)
   loop_->assertInLoopThread();
   InetAddress peerAddr(sockets::getPeerAddr(sockfd));
   char buf[32];
-  snprintf(buf, sizeof buf, ":%s#%d", peerAddr.toIpPort().c_str(), nextConnId_);
+  _snprintf_s(buf, sizeof buf, ":%s#%d", peerAddr.toIpPort().c_str(), nextConnId_);
   ++nextConnId_;
   string connName = name_ + buf;
 

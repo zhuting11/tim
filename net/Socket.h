@@ -1,22 +1,12 @@
-// Copyright 2010, Shuo Chen.  All rights reserved.
-// http://code.google.com/p/muduo/
-//
-// Use of this source code is governed by a BSD-style license
-// that can be found in the License file.
-
-// Author: Shuo Chen (chenshuo at chenshuo dot com)
-//
-// This is an internal header file, you should not include this.
-
-#ifndef MUDUO_NET_SOCKET_H
-#define MUDUO_NET_SOCKET_H
+#ifndef TIM_NET_SOCKET_H
+#define TIM_NET_SOCKET_H
 
 #include <boost/noncopyable.hpp>
 
 // struct tcp_info is in <netinet/tcp.h>
-struct tcp_info;
+//struct tcp_info;
 
-namespace muduo
+namespace tim
 {
 ///
 /// TCP networking.
@@ -85,4 +75,4 @@ class Socket : boost::noncopyable
 
 }
 }
-#endif  // MUDUO_NET_SOCKET_H
+#endif  // TIM_NET_SOCKET_H

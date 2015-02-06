@@ -1,21 +1,21 @@
-#include <muduo/net/EventLoop.h>
-#include <muduo/net/EventLoopThread.h>
-#include <muduo/base/Thread.h>
+#include <tim/net/EventLoop.h>
+#include <tim/net/EventLoopThread.h>
+#include <tim/base/Thread.h>
 
 #include <boost/bind.hpp>
 
 #include <stdio.h>
-#include <unistd.h>
+//#include <unistd.h>
 
-using namespace muduo;
-using namespace muduo::net;
+using namespace tim;
+using namespace tim::net;
 
 int cnt = 0;
 EventLoop* g_loop;
 
 void printTid()
 {
-  printf("pid = %d, tid = %d\n", getpid(), CurrentThread::tid());
+	printf("pid = %d, tid = %d\n", GetCurrentProcessId(), CurrentThread::tid());
   printf("now %s\n", Timestamp::now().toString().c_str());
 }
 
@@ -37,7 +37,7 @@ void cancel(TimerId timer)
 int main()
 {
   printTid();
-  sleep(1);
+  Sleep(1000);
   {
     EventLoop loop;
     g_loop = &loop;
@@ -57,12 +57,12 @@ int main()
     loop.loop();
     print("main loop exits");
   }
-  sleep(1);
+  Sleep(1000);
   {
     EventLoopThread loopThread;
     EventLoop* loop = loopThread.startLoop();
     loop->runAfter(2, printTid);
-    sleep(3);
+    Sleep(3000);
     print("thread loop exits");
   }
 }

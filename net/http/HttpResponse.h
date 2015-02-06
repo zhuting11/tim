@@ -1,28 +1,18 @@
-// Copyright 2010, Shuo Chen.  All rights reserved.
-// http://code.google.com/p/muduo/
-//
-// Use of this source code is governed by a BSD-style license
-// that can be found in the License file.
+#ifndef TIM_NET_HTTP_HTTPRESPONSE_H
+#define TIM_NET_HTTP_HTTPRESPONSE_H
 
-// Author: Shuo Chen (chenshuo at chenshuo dot com)
-//
-// This is a public header file, it must only include public header files.
-
-#ifndef MUDUO_NET_HTTP_HTTPRESPONSE_H
-#define MUDUO_NET_HTTP_HTTPRESPONSE_H
-
-#include <muduo/base/copyable.h>
-#include <muduo/base/Types.h>
+#include <tim/base/copyable.h>
+#include <tim/base/Types.h>
 
 #include <map>
 
-namespace muduo
+namespace tim
 {
 namespace net
 {
 
 class Buffer;
-class HttpResponse : public muduo::copyable
+class HttpResponse : public tim::copyable
 {
  public:
   enum HttpStatusCode
@@ -76,4 +66,4 @@ class HttpResponse : public muduo::copyable
 }
 }
 
-#endif  // MUDUO_NET_HTTP_HTTPRESPONSE_H
+#endif  // TIM_NET_HTTP_HTTPRESPONSE_H
